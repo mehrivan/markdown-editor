@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Markdown.Application.Tests</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Moq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Markdown.Application\Markdown.Application.csproj" />
+    <ProjectReference Include="..\..\src\Markdown.Core\Markdown.Core.csproj" />
+    <ProjectReference Include="..\..\src\Markdown.Domain\Markdown.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

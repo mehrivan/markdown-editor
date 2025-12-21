@@ -1,0 +1,131 @@
+# .editorconfig - Optimized for C# 13 / C# 14
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = lf
+
+[*.{cs,csx,vb,vbx}]
+# Default severity for all .NET code style rules
+dotnet_analyzer_diagnostic.category-Style.severity = warning
+dotnet_analyzer_diagnostic.category-Maintainability.severity = warning
+
+# --- Naming Conventions ---
+# Private fields: _camelCase
+# Example: private int _connectionCount;
+dotnet_naming_rule.private_members_with_underscore.symbols = private_fields
+dotnet_naming_rule.private_members_with_underscore.style = prefix_underscore
+dotnet_naming_rule.private_members_with_underscore.severity = warning
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.prefix_underscore.capitalization = camel_case
+dotnet_naming_style.prefix_underscore.required_prefix = _
+
+# --- Modern C# 12, 13, & 14 Features ---
+[*.cs]
+# C# 10+: File-scoped namespaces
+# Example: namespace MyNamespace; (No braces wrapping the class)
+csharp_style_namespace_declarations = file_scoped:warning
+
+# C# 12+: Prefer Primary Constructors
+# Example: public class User(string name, int age) { }
+csharp_style_prefer_primary_constructors = true:warning
+
+# C# 12+: Collection Expressions
+# Example: int[] numbers = [1, 2, 3]; (Instead of new int[] { 1, 2, 3 })
+dotnet_style_prefer_collection_expression = true:warning
+
+# C# 13+: Overload resolution priority (Implicit but useful to enforce style)
+# C# 14+: Field-backed properties (Enforce 'field' keyword over manual backing fields)
+# Note: As C# 14 stabilizes, specific analyzer IDs will be added here. 
+# For now, we prioritize simplification that leads into these features.
+
+# Example: List<string> items = new(); (Instead of new List<string>())
+csharp_style_prefer_implicit_object_creation = true:warning
+
+# Example: (x, y) = (y, x); (Instead of using a temp variable)
+csharp_style_prefer_tuple_swap = true:suggestion
+
+# --- Formatting & Layout ---
+# Example:
+# if (true)
+# {
+#     ...
+# }
+csharp_new_line_before_open_brace = all:warning
+csharp_new_line_before_else = true:warning
+csharp_new_line_before_catch = true:warning
+csharp_new_line_before_finally = true:warning
+csharp_new_line_before_members_in_object_initializers = true:warning
+
+# Braces and Using Directives
+# Example: if (isValid) { return; } (Always use braces)
+csharp_prefer_braces = true:warning
+
+# Example:
+# using System;
+# namespace MyNamespace;
+csharp_using_directive_placement = outside_namespace:warning
+dotnet_sort_system_directives_first = true
+
+# --- Language Simplification ---
+# Prefer 'var' when type is apparent
+# Example: var dict = new Dictionary<int, string>();
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+
+# Example: string name = GetName(); (Type not apparent, use explicit type)
+csharp_style_var_elsewhere = false:suggestion
+
+# Expression-bodied members
+# Example: public int GetAge() => 25;
+csharp_style_expression_bodied_methods = when_possible:suggestion
+csharp_style_expression_bodied_properties = when_possible:suggestion
+csharp_style_expression_bodied_accessors = when_possible:suggestion
+
+# Example: public User() { _init = true; } (Constructors keep block body)
+csharp_style_expression_bodied_constructors = false:none
+
+# Null checking and Pattern Matching
+# Example: if (obj is null) ...
+csharp_style_prefer_is_null_check_over_reference_equality_method = true:warning
+
+# Example: if (obj is string s) ... (Instead of 'as string' check)
+csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
+csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
+
+# Example: string name = input ?? "Default";
+dotnet_style_coalesce_expression = true:suggestion
+
+# Example: int? length = text?.Length;
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
+
+# Qualification (Remove 'this.')
+# Example: count++; (Instead of this.count++)
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+
+# --- Performance & Safety (Span, Readonly) ---
+# Prefer readonly for structs to avoid defensive copies
+# Example: public readonly struct Point { ... }
+csharp_style_prefer_readonly_struct_member = true:suggestion
+
+# Example: public int Count { get; set; } (Prepares for C# 14 'field' keyword)
+dotnet_style_prefer_auto_properties = true:warning
+
+# --- Analyzer & Reliability ---
+dotnet_analyzer_diagnostic.category-Reliability.severity = warning
+dotnet_analyzer_diagnostic.category-Performance.severity = warning
+dotnet_analyzer_diagnostic.category-Security.severity = warning
+
+# --- JSON/Web formatting ---
+[*.{json,yml,yaml}]
+indent_size = 2
