@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Agents files and folder
+.kiro/
+AGENTS.md
+
 # User-specific files
 *.rsuser
 *.suo

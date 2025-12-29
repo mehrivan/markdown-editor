@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <RootNamespace>Markdown.Domain</RootNamespace>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
-
 </Project>

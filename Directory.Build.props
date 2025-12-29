@@ -1,112 +1,111 @@
 <Project>
+  <!-- ============================================ -->
+  <!-- PROJECT INFORMATION -->
+  <!-- ============================================ -->
+  <PropertyGroup>
+    <Product>Markdown Editor</Product>
+    <Authors>Yahya Fazeli</Authors>
+    <Company>Mehrivan</Company>
+    <Copyright>Copyright © $([System.DateTime]::Now.Year) Yahya Fazeli</Copyright>
+    <Description>A modern, lightweight Markdown editor for .NET</Description>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- PROJECT INFORMATION -->
-    <!-- ============================================ -->
-    <PropertyGroup>
-        <Product>Markdown Editor</Product>
-        <Authors>Yahya Fazeli</Authors>
-        <Company>Mehrivan</Company>
-        <Copyright>Copyright © $([System.DateTime]::Now.Year) Yahya Fazeli</Copyright>
-        <Description>A modern, lightweight Markdown editor for .NET</Description>
-    </PropertyGroup>
+  <!-- ============================================ -->
+  <!-- VERSIONING -->
+  <!-- ============================================ -->
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Version>$(VersionPrefix)</Version>
+    <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
+    <FileVersion>$(VersionPrefix).0</FileVersion>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- VERSIONING -->
-    <!-- ============================================ -->
-    <PropertyGroup>
-        <VersionPrefix>0.1.0</VersionPrefix>
-        <Version>$(VersionPrefix)</Version>
-        <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
-        <FileVersion>$(VersionPrefix).0</FileVersion>
-    </PropertyGroup>
+  <!-- ============================================ -->
+  <!-- ARTIFACT & PACKAGE SETTINGS -->
+  <!-- ============================================ -->
+  <PropertyGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mehrivan/markdown-editor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mehrivan/markdown-editor</RepositoryUrl>
+    <PackageTags>markdown;editor;dotnet</PackageTags>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- ARTIFACT & PACKAGE SETTINGS -->
-    <!-- ============================================ -->
-    <PropertyGroup>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/mehrivan/markdown-editor</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/mehrivan/markdown-editor</RepositoryUrl>
-        <PackageTags>markdown;editor;dotnet</PackageTags>
-    </PropertyGroup>
 
-    <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Condition="Exists('$(MSBuildThisFileDirectory)README.md')" />
-    </ItemGroup>
+  <!-- ============================================ -->
+  <!-- LANGUAGE & COMPILER SETTINGS -->
+  <!-- ============================================ -->
+  <PropertyGroup>
+    <LangVersion>default</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateDocumentationFile Condition="'$(Configuration)' == 'Release'"
+      >true</GenerateDocumentationFile
+    >
+    <NoWarn>$(NoWarn);1591;NETSDK1233</NoWarn>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- LANGUAGE & COMPILER SETTINGS -->
-    <!-- ============================================ -->
-    <PropertyGroup>
-        <LangVersion>default</LangVersion>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-        <GenerateDocumentationFile Condition="'$(Configuration)' == 'Release'">true</GenerateDocumentationFile>
-        <NoWarn>$(NoWarn);1591</NoWarn>
-    </PropertyGroup>
+  <!-- ============================================ -->
+  <!-- CODE QUALITY & ANALYSIS -->
+  <!-- ============================================ -->
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- CODE QUALITY & ANALYSIS -->
-    <!-- ============================================ -->
-    <PropertyGroup>
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <AnalysisLevel>latest</AnalysisLevel>
-        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
-    </PropertyGroup>
+  <!-- ============================================ -->
+  <!-- BUILD SETTINGS -->
+  <!-- ============================================ -->
+  <PropertyGroup>
+    <Deterministic>true</Deterministic>
+    <PathMap Condition="'$(CI)' == 'true'">$(MSBuildProjectDirectory)=/_</PathMap>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- BUILD SETTINGS -->
-    <!-- ============================================ -->
-    <PropertyGroup>
-        <Deterministic>true</Deterministic>
-        <PathMap Condition="'$(CI)' == 'true'">$(MSBuildProjectDirectory)=/_</PathMap>
-        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-    </PropertyGroup>
+  <!-- ============================================ -->
+  <!-- BUILD PERFORMANCE -->
+  <!-- ============================================ -->
+  <PropertyGroup>
+    <UseSharedCompilation>true</UseSharedCompilation>
+    <RestorePackagesInParallel>true</RestorePackagesInParallel>
+    <RunAnalyzersDuringBuild Condition="'$(Configuration)' == 'Debug'"
+      >false</RunAnalyzersDuringBuild
+    >
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- BUILD PERFORMANCE -->
-    <!-- ============================================ -->
-    <PropertyGroup>
-        <UseSharedCompilation>true</UseSharedCompilation>
-        <RestorePackagesInParallel>true</RestorePackagesInParallel>
-        <RunAnalyzersDuringBuild Condition="'$(Configuration)' == 'Debug'">false</RunAnalyzersDuringBuild>
-    </PropertyGroup>
+  <!-- ============================================ -->
+  <!-- CONFIGURATION-SPECIFIC SETTINGS -->
+  <!-- ============================================ -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- CONFIGURATION-SPECIFIC SETTINGS -->
-    <!-- ============================================ -->
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>embedded</DebugType>
+    <Optimize>true</Optimize>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <DebugType>embedded</DebugType>
-        <Optimize>true</Optimize>
-        <DebugSymbols>true</DebugSymbols>
-    </PropertyGroup>
+  <!-- ============================================ -->
+  <!-- TRIMMING & AOT (if applicable) -->
+  <!-- ============================================ -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
 
-    <!-- ============================================ -->
-    <!-- TRIMMING & AOT (if applicable) -->
-    <!-- ============================================ -->
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <IsTrimmable>true</IsTrimmable>
-        <IsAotCompatible>true</IsAotCompatible>
-    </PropertyGroup>
-
-    <!-- ============================================ -->
-    <!-- SOURCE LINK (For debugging NuGet packages) -->
-    <!-- ============================================ -->
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <RepositoryType>git</RepositoryType>
-    </PropertyGroup>
-
+  <!-- ============================================ -->
+  <!-- SOURCE LINK (For debugging NuGet packages) -->
+  <!-- ============================================ -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
 </Project>

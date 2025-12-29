@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <RootNamespace>Markdown.Core.Tests</RootNamespace>
     <TargetFramework>net10.0</TargetFramework>
@@ -18,5 +17,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Markdown.Core\Markdown.Core.csproj" />
   </ItemGroup>
-
 </Project>
