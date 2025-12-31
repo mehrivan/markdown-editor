@@ -1,9 +1,5 @@
 namespace Markdown.Application.ReadModels;
 
-/// <summary>
-/// Read model representing a file or folder in the workspace.
-/// This is a projection of the file system, not domain logic.
-/// </summary>
 public sealed record WorkspaceEntry(
     string Path,
     FileEntryType Type,
@@ -11,8 +7,10 @@ public sealed record WorkspaceEntry(
     long Size,
     DateTime ModifiedAt,
     bool IsMarkdownFile
-) {
-    public static WorkspaceEntry FromFileInfo(FileInfo fileInfo) {
+)
+{
+    public static WorkspaceEntry FromFileInfo(FileInfo fileInfo)
+    {
         ArgumentNullException.ThrowIfNull(fileInfo);
 
         bool isMarkdown = fileInfo.Extension.Equals(".md", StringComparison.OrdinalIgnoreCase)
@@ -28,7 +26,8 @@ public sealed record WorkspaceEntry(
         );
     }
 
-    public static WorkspaceEntry FromDirectoryInfo(DirectoryInfo dirInfo) {
+    public static WorkspaceEntry FromDirectoryInfo(DirectoryInfo dirInfo)
+    {
         ArgumentNullException.ThrowIfNull(dirInfo);
 
         return new WorkspaceEntry(
@@ -42,10 +41,8 @@ public sealed record WorkspaceEntry(
     }
 }
 
-/// <summary>
-/// Type of file system entry (Application layer enum).
-/// </summary>
-public enum FileEntryType {
+public enum FileEntryType
+{
     File,
     Folder
 }

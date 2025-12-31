@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\Markdown.Domain\Markdown.Domain.csproj" />
+    <ProjectReference Include="..\Markdown.Application\Markdown.Application.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

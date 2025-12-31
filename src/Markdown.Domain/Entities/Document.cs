@@ -1,6 +1,7 @@
 namespace Markdown.Domain.Entities;
 
-public sealed class Document : AggregateRoot<DocumentId> {
+public sealed class Document : AggregateRoot<DocumentId>
+{
     public FilePath Path { get; private set; }
     public MarkdownContent Content { get; private set; }
 
@@ -10,15 +11,18 @@ public sealed class Document : AggregateRoot<DocumentId> {
         DocumentId id,
         FilePath path,
         MarkdownContent content,
-        DateTime lastModifiedUtc) {
+        DateTime lastModifiedUtc)
+    {
         Id = id;
         Path = path;
         Content = content;
         LastModifiedUtc = lastModifiedUtc;
     }
 
-    public Result UpdateContent(MarkdownContent newContent, DateTime utcNow) {
-        if (newContent == Content) {
+    public Result UpdateContent(MarkdownContent newContent, DateTime utcNow)
+    {
+        if (newContent == Content)
+        {
             return Results.Success();
         }
 
@@ -27,7 +31,8 @@ public sealed class Document : AggregateRoot<DocumentId> {
         return Results.Success();
     }
 
-    public Result Move(FilePath newPath) {
+    public Result Move(FilePath newPath)
+    {
         Path = newPath;
         return Results.Success();
     }
