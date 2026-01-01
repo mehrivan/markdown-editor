@@ -9,6 +9,36 @@ public sealed class FileDocumentRepository : IDocumentRepository
         return Task.FromResult(Results.Success<Document?>(null));
     }
 
+    public async Task<Result<Document>> GetByPathAsync(FilePath path, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(path);
+
+        try
+        {
+            string filePath = path.Value;
+
+            if (!File.Exists(filePath))
+            {
+                return Results.Failure<Document>($"File not found: {filePath}");
+            }
+
+            string content = await File.ReadAllTextAsync(filePath, ct).ConfigureAwait(false);
+            DateTime lastModified = File.GetLastWriteTimeUtc(filePath);
+
+            var document = new Document(
+                DocumentId.New(),
+                path,
+                new MarkdownContent(content),
+                lastModified);
+
+            return Results.Success(document);
+        }
+        catch (Exception ex)
+        {
+            return Results.Failure<Document>($"Failed to open document: {ex.Message}");
+        }
+    }
+
     public async Task<Result> SaveAsync(Document document, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(document);
