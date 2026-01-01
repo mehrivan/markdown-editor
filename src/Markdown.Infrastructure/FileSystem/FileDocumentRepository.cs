@@ -11,7 +11,7 @@ public sealed class FileDocumentRepository : IDocumentRepository
 
     public async Task<Result<Document>> GetByPathAsync(FilePath path, CancellationToken ct)
     {
-        ArgumentNullException.ThrowIfNull(path);
+        _ = Guard.NotNull(path);
 
         try
         {
@@ -25,7 +25,7 @@ public sealed class FileDocumentRepository : IDocumentRepository
             string content = await File.ReadAllTextAsync(filePath, ct).ConfigureAwait(false);
             DateTime lastModified = File.GetLastWriteTimeUtc(filePath);
 
-            var document = new Document(
+            Document document = new(
                 DocumentId.New(),
                 path,
                 new MarkdownContent(content),
@@ -41,7 +41,7 @@ public sealed class FileDocumentRepository : IDocumentRepository
 
     public async Task<Result> SaveAsync(Document document, CancellationToken ct)
     {
-        ArgumentNullException.ThrowIfNull(document);
+        _ = Guard.NotNull(document);
 
         try
         {

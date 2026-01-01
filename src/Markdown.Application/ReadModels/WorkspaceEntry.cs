@@ -1,3 +1,5 @@
+using Markdown.Core;
+
 namespace Markdown.Application.ReadModels;
 
 public sealed record WorkspaceEntry(
@@ -11,7 +13,7 @@ public sealed record WorkspaceEntry(
 {
     public static WorkspaceEntry FromFileInfo(FileInfo fileInfo)
     {
-        ArgumentNullException.ThrowIfNull(fileInfo);
+        _ = Guard.NotNull(fileInfo);
 
         bool isMarkdown = fileInfo.Extension.Equals(".md", StringComparison.OrdinalIgnoreCase)
             || fileInfo.Extension.Equals(".markdown", StringComparison.OrdinalIgnoreCase);
@@ -28,7 +30,7 @@ public sealed record WorkspaceEntry(
 
     public static WorkspaceEntry FromDirectoryInfo(DirectoryInfo dirInfo)
     {
-        ArgumentNullException.ThrowIfNull(dirInfo);
+        _ = Guard.NotNull(dirInfo);
 
         return new WorkspaceEntry(
             Path: dirInfo.FullName,
