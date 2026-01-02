@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Markdown.Infrastructure\Markdown.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**\*" />
+  </ItemGroup>
+
 </Project>
