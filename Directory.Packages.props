@@ -10,8 +10,14 @@
     </PropertyGroup>
     <ItemGroup Label="UI Framework - Avalonia">
         <PackageVersion Include="Avalonia" Version="11.2.2" />
+        <PackageVersion Include="Avalonia.Desktop" Version="11.2.2" />
+        <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.2" />
         <PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.2" />
-        <PackageVersion Include="AvaloniaEdit" Version="11.1.0" />
+        <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.2.0" />
+    </ItemGroup>
+
+    <ItemGroup Label="MVVM Framework">
+        <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     </ItemGroup>
 
     <ItemGroup Label="Markdown Processing">
