@@ -3,4 +3,5 @@ global using Markdown.Application.Services;
 global using Markdown.Domain.Interfaces;
 global using Markdown.UI.Desktop.Converters;
 global using Markdown.UI.Desktop.Models;
+global using Markdown.UI.Desktop.Services;
 global using Microsoft.Extensions.DependencyInjection;
