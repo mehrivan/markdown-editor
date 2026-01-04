@@ -19,11 +19,11 @@ internal static class ServiceCollectionExtensions
         _ = services.AddSingleton<IWorkspaceExplorer, WorkspaceExplorer>();
         _ = services.AddSingleton<IDocumentService, DocumentService>();
 
-        // UI Services (to be added in later tasks)
-        // services.AddSingleton<IDialogService, DialogService>();
-        // services.AddSingleton<IAutoSaveService, AutoSaveService>();
-        // services.AddSingleton<ISettingsService, SettingsService>();
-        // services.AddSingleton<IThemeService, ThemeService>();
+        // UI Services
+        _ = services.AddSingleton<ISettingsService, SettingsService>();
+        _ = services.AddSingleton<IThemeService, ThemeService>();
+        _ = services.AddSingleton<IDialogService, DialogService>();
+        _ = services.AddSingleton<IAutoSaveService, AutoSaveService>();
 
         // ViewModels (to be added in later tasks)
         // services.AddTransient<MainWindowViewModel>();
