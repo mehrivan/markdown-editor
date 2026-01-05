@@ -1,4 +1,5 @@
 global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
 global using Markdown.Application.Services;
 global using Markdown.Domain.Interfaces;
 global using Markdown.UI.Desktop.Converters;
