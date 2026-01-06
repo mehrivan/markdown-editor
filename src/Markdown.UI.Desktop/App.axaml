@@ -5,4 +5,21 @@
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceInclude Source="avares://Markdown.UI.Desktop/Themes/Light.axaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceInclude Source="avares://Markdown.UI.Desktop/Themes/Dark.axaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
