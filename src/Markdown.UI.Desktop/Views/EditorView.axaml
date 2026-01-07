@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:AvalonEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             xmlns:vm="using:Markdown.UI.Desktop.ViewModels"
+             x:Class="Markdown.UI.Desktop.Views.EditorView"
+             x:DataType="vm:EditorViewModel">
+
+    <AvalonEdit:TextEditor x:Name="TextEditor"
+                           Background="{DynamicResource EditorBackgroundBrush}"
+                           Foreground="{DynamicResource TextBrush}"
+                           ShowLineNumbers="True"
+                           FontFamily="Cascadia Code, Consolas, Courier New, monospace"
+                           FontSize="14"
+                           HorizontalScrollBarVisibility="Auto"
+                           VerticalScrollBarVisibility="Auto"
+                           IsReadOnly="{Binding IsReadOnly}" />
+</UserControl>

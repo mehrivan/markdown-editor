@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Markdown.UI.Desktop.ViewModels"
+             xmlns:models="using:Markdown.UI.Desktop.Models"
+             xmlns:converters="using:Markdown.UI.Desktop.Converters"
+             x:Class="Markdown.UI.Desktop.Views.FileExplorerView"
+             x:DataType="vm:FileExplorerViewModel">
+
+    <UserControl.Resources>
+        <converters:FileTypeToIconConverter x:Key="FileTypeToIconConverter" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- TreeView item hover and selection styles -->
+        <Style Selector="TreeViewItem">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource TreeViewItemSelectedBrush}" />
+        </Style>
+        <Style Selector="TreeViewItem:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource TreeViewItemHoverBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*"
+          Background="{DynamicResource SidebarBackgroundBrush}">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Padding="12,8"
+                Background="{DynamicResource SidebarBackgroundBrush}">
+            <TextBlock Text="EXPLORER"
+                       FontSize="11"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource SecondaryTextBrush}"
+                       LetterSpacing="0.5" />
+        </Border>
+
+        <!-- Loading indicator -->
+        <Border Grid.Row="1"
+                IsVisible="{Binding IsLoading}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,20,0,0">
+            <TextBlock Text="Loading..."
+                       FontSize="12"
+                       Foreground="{DynamicResource SecondaryTextBrush}" />
+        </Border>
+
+        <!-- No workspace message -->
+        <Border Grid.Row="1"
+                IsVisible="{Binding !WorkspacePath}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="20">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="No folder opened"
+                           FontSize="12"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
+                           TextAlignment="Center" />
+                <TextBlock Text="Open a folder to start"
+                           FontSize="11"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
+                           TextAlignment="Center"
+                           Margin="0,4,0,0"
+                           Opacity="0.7" />
+            </StackPanel>
+        </Border>
+
+        <!-- File Tree -->
+        <TreeView Grid.Row="1"
+                  x:Name="FileTree"
+                  ItemsSource="{Binding RootNodes}"
+                  SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                  Background="Transparent"
+                  IsVisible="{Binding WorkspacePath, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}"
+                                  DataType="models:FileTreeNode">
+                    <Grid ColumnDefinitions="Auto,*"
+                          Height="22"
+                          Margin="0,1">
+                        <!-- File/Folder Icon -->
+                        <Image Grid.Column="0"
+                               Width="16"
+                               Height="16"
+                               Margin="4,0,6,0"
+                               Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" />
+
+                        <!-- Name -->
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Name}"
+                                   Foreground="{DynamicResource TextBrush}"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis" />
+                    </Grid>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>
