@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Markdown.UI.Desktop.ViewModels"
+             x:Class="Markdown.UI.Desktop.Views.TabBarView"
+             x:DataType="vm:MainWindowViewModel">
+
+    <UserControl.Styles>
+        <!-- Tab item styles -->
+        <Style Selector="Border.tab-item">
+            <Setter Property="Background" Value="{DynamicResource TabBackgroundBrush}" />
+        </Style>
+        <Style Selector="Border.tab-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource TabHoverBackgroundBrush}" />
+        </Style>
+        <Style Selector="Border.tab-item.active">
+            <Setter Property="Background" Value="{DynamicResource TabActiveBackgroundBrush}" />
+        </Style>
+        <!-- Close button hover effect -->
+        <Style Selector="Button.close-btn:pointerover TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource TabBorderBrush}"
+            Height="35">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Disabled">
+            <ItemsControl x:Name="TabsItemsControl"
+                          ItemsSource="{Binding Tabs}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:TabViewModel">
+                        <Border Classes="tab-item"
+                                MinWidth="120"
+                                MaxWidth="200"
+                                Padding="12,0,4,0"
+                                BorderBrush="{DynamicResource TabBorderBrush}"
+                                BorderThickness="0,0,1,0"
+                                Cursor="Hand">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <!-- Tab Title -->
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding DisplayTitle}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           FontSize="13"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip.Tip="{Binding FilePath}" />
+
+                                <!-- Close Button -->
+                                <Button Grid.Column="1"
+                                        Classes="close-btn"
+                                        Width="20"
+                                        Height="20"
+                                        Margin="8,0,0,0"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Command="{Binding $parent[ItemsControl].((vm:MainWindowViewModel)DataContext).CloseTabCommand}"
+                                        CommandParameter="{Binding}"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalContentAlignment="Center"
+                                        Cursor="Hand">
+                                    <TextBlock Text="&#x2715;"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Border>
+</UserControl>

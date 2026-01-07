@@ -1,19 +1,161 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Markdown.UI.Desktop.ViewModels"
+        xmlns:views="using:Markdown.UI.Desktop.Views"
+        xmlns:converters="using:Markdown.UI.Desktop.Converters"
         x:Class="Markdown.UI.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Title="Markdown Editor"
         Width="1200"
         Height="800"
         MinWidth="800"
         MinHeight="600"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}">
 
-    <Grid>
-        <TextBlock Text="Markdown Editor"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="24"
-                   Foreground="Gray" />
-    </Grid>
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" Invert="True" />
+    </Window.Resources>
 
+    <Window.Styles>
+        <!-- Activity Bar button styles -->
+        <Style Selector="Button.activity-btn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="Button.activity-btn:pointerover">
+            <Setter Property="Background" Value="{DynamicResource TreeViewItemHoverBrush}" />
+        </Style>
+        <Style Selector="Button.activity-btn.active">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <!-- Status Bar (Bottom) -->
+        <views:StatusBarView DockPanel.Dock="Bottom"
+                             DataContext="{Binding StatusBar}" />
+
+        <!-- Main Content Area -->
+        <Grid ColumnDefinitions="Auto,Auto,*">
+
+            <!-- Activity Bar (Left) -->
+            <Border Grid.Column="0"
+                    Width="48"
+                    Background="{DynamicResource ActivityBarBackgroundBrush}">
+                <StackPanel VerticalAlignment="Top">
+                    <!-- Explorer Toggle Button -->
+                    <Button Classes="activity-btn"
+                            Classes.active="{Binding IsSidebarVisible}"
+                            Command="{Binding ToggleSidebarCommand}"
+                            ToolTip.Tip="Toggle Explorer (Ctrl+B)">
+                        <PathIcon Width="24"
+                                  Height="24"
+                                  Foreground="{DynamicResource ForegroundBrush}"
+                                  Data="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8" />
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Primary Sidebar (File Explorer) -->
+            <Grid Grid.Column="1"
+                  IsVisible="{Binding IsSidebarVisible}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" MinWidth="150" MaxWidth="500" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- File Explorer -->
+                <views:FileExplorerView Grid.Column="0"
+                                        DataContext="{Binding FileExplorer}" />
+
+                <!-- Resize Splitter -->
+                <GridSplitter Grid.Column="1"
+                              Width="4"
+                              Background="{DynamicResource SplitterBrush}"
+                              ResizeDirection="Columns" />
+            </Grid>
+
+            <!-- Main Editor Area -->
+            <Grid Grid.Column="2"
+                  RowDefinitions="Auto,*"
+                  Background="{DynamicResource EditorBackgroundBrush}">
+
+                <!-- Tab Bar -->
+                <views:TabBarView Grid.Row="0"
+                                  DataContext="{Binding}"
+                                  IsVisible="{Binding Tabs.Count}" />
+
+                <!-- Editor Content Area -->
+                <Grid Grid.Row="1">
+                    <!-- Active Editor (when tabs exist) -->
+                    <Border IsVisible="{Binding ActiveTab, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <views:EditorView DataContext="{Binding ActiveTab.Editor}" />
+                    </Border>
+
+                    <!-- Empty State (when no tabs) -->
+                    <Border IsVisible="{Binding !Tabs.Count}"
+                            Background="{DynamicResource EditorBackgroundBrush}">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="16">
+                            <TextBlock Text="Markdown Editor"
+                                       FontSize="32"
+                                       FontWeight="Light"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       HorizontalAlignment="Center" />
+
+                            <StackPanel Spacing="8"
+                                        HorizontalAlignment="Center">
+                                <TextBlock Text="Get started by:"
+                                           FontSize="14"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           HorizontalAlignment="Center" />
+
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            Spacing="8">
+                                    <TextBlock Text="Ctrl+N"
+                                               FontSize="13"
+                                               FontFamily="Cascadia Code, Consolas, monospace"
+                                               Foreground="{DynamicResource AccentBrush}" />
+                                    <TextBlock Text="New File"
+                                               FontSize="13"
+                                               Foreground="{DynamicResource SecondaryTextBrush}" />
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            Spacing="8">
+                                    <TextBlock Text="Ctrl+O"
+                                               FontSize="13"
+                                               FontFamily="Cascadia Code, Consolas, monospace"
+                                               Foreground="{DynamicResource AccentBrush}" />
+                                    <TextBlock Text="Open File"
+                                               FontSize="13"
+                                               Foreground="{DynamicResource SecondaryTextBrush}" />
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            Spacing="8">
+                                    <TextBlock Text="Ctrl+K O"
+                                               FontSize="13"
+                                               FontFamily="Cascadia Code, Consolas, monospace"
+                                               Foreground="{DynamicResource AccentBrush}" />
+                                    <TextBlock Text="Open Folder"
+                                               FontSize="13"
+                                               Foreground="{DynamicResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </DockPanel>
 </Window>
