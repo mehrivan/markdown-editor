@@ -35,6 +35,17 @@
         </Style>
     </Window.Styles>
 
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding NewFileCommand}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFileCommand}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+        <KeyBinding Gesture="Ctrl+W" Command="{Binding CloseTabCommand}" />
+        <KeyBinding Gesture="Ctrl+Tab" Command="{Binding NextTabCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+Tab" Command="{Binding PreviousTabCommand}" />
+        <KeyBinding Gesture="Ctrl+B" Command="{Binding ToggleSidebarCommand}" />
+    </Window.KeyBindings>
+
     <DockPanel>
         <!-- Status Bar (Bottom) -->
         <views:StatusBarView DockPanel.Dock="Bottom"
