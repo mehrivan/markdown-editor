@@ -26,6 +26,11 @@ internal sealed class AppSettings
     public double WindowY { get; set; }
 
     /// <summary>
+    /// Whether the main window is maximized.
+    /// </summary>
+    public bool IsMaximized { get; set; }
+
+    /// <summary>
     /// Whether the sidebar (file explorer) is visible.
     /// </summary>
     public bool IsSidebarVisible { get; set; } = true;
