@@ -1,3 +1,4 @@
+using Markdown.Desktop.Services;
 using Markdown.Infrastructure.FileSystem;
 using Markdown.Infrastructure.Services;
 using Markdown.UI.Desktop.ViewModels;
@@ -25,6 +26,7 @@ internal static class ServiceCollectionExtensions
         _ = services.AddSingleton<IThemeService, ThemeService>();
         _ = services.AddSingleton<IDialogService, DialogService>();
         _ = services.AddSingleton<IAutoSaveService, AutoSaveService>();
+        _ = services.AddSingleton<IFileWatcherService, FileWatcherService>();
 
         // ViewModels
         _ = services.AddTransient<MainWindowViewModel>();

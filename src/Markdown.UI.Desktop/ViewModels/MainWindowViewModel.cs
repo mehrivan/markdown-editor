@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using Avalonia;
 
 using Markdown.Application.Services;
+using Markdown.Desktop.Services;
 using Markdown.Domain.Entities;
 using Markdown.Domain.ValueObjects;
 using Markdown.UI.Desktop.Models;
@@ -66,7 +67,8 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
         IAutoSaveService autoSaveService,
         IThemeService themeService,
         ISettingsService settingsService,
-        IWorkspaceExplorer workspaceExplorer)
+        IWorkspaceExplorer workspaceExplorer,
+        IFileWatcherService fileWatcherService)
     {
         _documentService = documentService;
         _dialogService = dialogService;
@@ -75,7 +77,7 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
         _settingsService = settingsService;
 
         // Initialize child ViewModels
-        FileExplorer = new FileExplorerViewModel(workspaceExplorer);
+        FileExplorer = new FileExplorerViewModel(workspaceExplorer, fileWatcherService);
         StatusBar = new StatusBarViewModel();
 
         // Wire up file explorer events
