@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 
 using Markdown.Application.ReadModels;
 using Markdown.Application.Services;
+using Markdown.Desktop.Services;
 using Markdown.UI.Desktop.Models;
 
 namespace Markdown.UI.Desktop.ViewModels;
@@ -9,9 +10,11 @@ namespace Markdown.UI.Desktop.ViewModels;
 /// <summary>
 /// ViewModel for the file explorer panel, managing workspace navigation.
 /// </summary>
-internal sealed partial class FileExplorerViewModel : ViewModelBase
+internal sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
 {
     private readonly IWorkspaceExplorer _workspaceExplorer;
+    private readonly IFileWatcherService _fileWatcherService;
+    private bool _disposed;
 
     /// <summary>
     /// The root path of the current workspace.
@@ -46,9 +49,12 @@ internal sealed partial class FileExplorerViewModel : ViewModelBase
     /// Creates a new FileExplorerViewModel.
     /// </summary>
     /// <param name="workspaceExplorer">The workspace explorer service.</param>
-    public FileExplorerViewModel(IWorkspaceExplorer workspaceExplorer)
+    /// <param name="fileWatcherService">The file watcher service for detecting external changes.</param>
+    public FileExplorerViewModel(IWorkspaceExplorer workspaceExplorer, IFileWatcherService fileWatcherService)
     {
         _workspaceExplorer = workspaceExplorer;
+        _fileWatcherService = fileWatcherService;
+        _fileWatcherService.FileSystemChanged += OnFileSystemChanged;
 
         RefreshCommand = new AsyncRelayCommand(RefreshAsync, CanRefresh);
         ExpandFolderCommand = new AsyncRelayCommand<FileTreeNode>(ExpandFolderAsync);
@@ -77,8 +83,17 @@ internal sealed partial class FileExplorerViewModel : ViewModelBase
     /// <param name="cancellationToken">Cancellation token.</param>
     public async Task LoadWorkspaceAsync(string path, CancellationToken cancellationToken = default)
     {
+        // Stop watching the previous workspace
+        _fileWatcherService.StopWatching();
+
         WorkspacePath = path;
         await RefreshAsync(cancellationToken);
+
+        // Start watching the new workspace
+        if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
+        {
+            _fileWatcherService.StartWatching(path);
+        }
     }
 
     /// <summary>
@@ -207,5 +222,267 @@ internal sealed partial class FileExplorerViewModel : ViewModelBase
     private static bool IsLoadingPlaceholder(FileTreeNode node)
     {
         return string.IsNullOrEmpty(node.FullPath) && node.Name == "Loading...";
+    }
+
+    /// <summary>
+    /// Handles file system change events from the file watcher service.
+    /// </summary>
+    private void OnFileSystemChanged(object? sender, FileSystemChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(WorkspacePath))
+        {
+            return;
+        }
+
+        switch (e.ChangeType)
+        {
+            case FileSystemChangeType.Created:
+                HandleFileCreated(e.Path, e.IsDirectory);
+                break;
+            case FileSystemChangeType.Deleted:
+                HandleFileDeleted(e.Path);
+                break;
+            case FileSystemChangeType.Renamed:
+                HandleFileRenamed(e.OldPath!, e.Path, e.IsDirectory);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Handles a file or folder being created.
+    /// </summary>
+    private void HandleFileCreated(string path, bool isDirectory)
+    {
+        var parentPath = Path.GetDirectoryName(path);
+        if (parentPath is null)
+        {
+            return;
+        }
+
+        // Find the parent node
+        var parentNode = FindNodeByPath(parentPath);
+
+        // If parent is not loaded or not expanded, no need to add
+        if (parentNode is null)
+        {
+            // Check if it's a direct child of the workspace root
+            if (string.Equals(parentPath, WorkspacePath, StringComparison.OrdinalIgnoreCase))
+            {
+                AddNodeToCollection(RootNodes, path, isDirectory);
+            }
+            return;
+        }
+
+        // If parent has only a loading placeholder, don't add (will load when expanded)
+        if (parentNode.Children.Count == 1 && IsLoadingPlaceholder(parentNode.Children[0]))
+        {
+            return;
+        }
+
+        AddNodeToCollection(parentNode.Children, path, isDirectory);
+    }
+
+    /// <summary>
+    /// Adds a new node to a collection in sorted order.
+    /// </summary>
+    private static void AddNodeToCollection(ObservableCollection<FileTreeNode> collection, string path, bool isDirectory)
+    {
+        var newNode = new FileTreeNode
+        {
+            Name = Path.GetFileName(path),
+            FullPath = path,
+            Type = isDirectory ? FileEntryType.Folder : FileEntryType.File
+        };
+
+        // Add placeholder for folders
+        if (isDirectory)
+        {
+            newNode.Children.Add(new FileTreeNode
+            {
+                Name = "Loading...",
+                FullPath = string.Empty,
+                Type = FileEntryType.File
+            });
+        }
+
+        // Insert in sorted order: folders first, then alphabetically
+        var insertIndex = 0;
+        for (var i = 0; i < collection.Count; i++)
+        {
+            var existing = collection[i];
+            if (IsLoadingPlaceholder(existing))
+            {
+                continue;
+            }
+
+            // Folders come before files
+            if (isDirectory && !existing.IsFolder)
+            {
+                break;
+            }
+
+            // Within same type, sort alphabetically
+            if (isDirectory == existing.IsFolder &&
+                string.Compare(newNode.Name, existing.Name, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                break;
+            }
+
+            insertIndex = i + 1;
+        }
+
+        collection.Insert(insertIndex, newNode);
+    }
+
+    /// <summary>
+    /// Handles a file or folder being deleted.
+    /// </summary>
+    private void HandleFileDeleted(string path)
+    {
+        var parentPath = Path.GetDirectoryName(path);
+        if (parentPath is null)
+        {
+            return;
+        }
+
+        // Check if it's a direct child of the workspace root
+        if (string.Equals(parentPath, WorkspacePath, StringComparison.OrdinalIgnoreCase))
+        {
+            RemoveNodeFromCollection(RootNodes, path);
+            return;
+        }
+
+        // Find the parent node
+        var parentNode = FindNodeByPath(parentPath);
+        if (parentNode is not null)
+        {
+            RemoveNodeFromCollection(parentNode.Children, path);
+        }
+    }
+
+    /// <summary>
+    /// Removes a node from a collection by path.
+    /// </summary>
+    private static void RemoveNodeFromCollection(ObservableCollection<FileTreeNode> collection, string path)
+    {
+        for (var i = 0; i < collection.Count; i++)
+        {
+            if (string.Equals(collection[i].FullPath, path, StringComparison.OrdinalIgnoreCase))
+            {
+                collection.RemoveAt(i);
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles a file or folder being renamed.
+    /// </summary>
+    private void HandleFileRenamed(string oldPath, string newPath, bool isDirectory)
+    {
+        var node = FindNodeByPath(oldPath);
+        if (node is not null)
+        {
+            node.Name = Path.GetFileName(newPath);
+            node.FullPath = newPath;
+
+            // If it's a directory, update all children paths recursively
+            if (isDirectory && node.Children.Count > 0 && !IsLoadingPlaceholder(node.Children[0]))
+            {
+                UpdateChildPaths(node, oldPath, newPath);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Recursively updates paths of all children after a parent folder rename.
+    /// </summary>
+    private static void UpdateChildPaths(FileTreeNode parent, string oldBasePath, string newBasePath)
+    {
+        foreach (var child in parent.Children)
+        {
+            if (IsLoadingPlaceholder(child))
+            {
+                continue;
+            }
+
+            // Replace the old base path with the new one
+            if (child.FullPath.StartsWith(oldBasePath, StringComparison.OrdinalIgnoreCase))
+            {
+                child.FullPath = newBasePath + child.FullPath[oldBasePath.Length..];
+            }
+
+            // Recurse into folders
+            if (child.IsFolder && child.Children.Count > 0)
+            {
+                UpdateChildPaths(child, oldBasePath, newBasePath);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Finds a node in the tree by its full path.
+    /// </summary>
+    private FileTreeNode? FindNodeByPath(string path)
+    {
+        if (string.IsNullOrEmpty(WorkspacePath))
+        {
+            return null;
+        }
+
+        // Get relative path from workspace root
+        if (!path.StartsWith(WorkspacePath, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        // If it's the workspace root itself, return null (no node for root)
+        if (string.Equals(path, WorkspacePath, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var relativePath = path[WorkspacePath.Length..].TrimStart(Path.DirectorySeparatorChar);
+        var pathParts = relativePath.Split(Path.DirectorySeparatorChar);
+
+        var currentCollection = RootNodes;
+        FileTreeNode? currentNode = null;
+
+        foreach (var part in pathParts)
+        {
+            currentNode = null;
+            foreach (var node in currentCollection)
+            {
+                if (string.Equals(node.Name, part, StringComparison.OrdinalIgnoreCase))
+                {
+                    currentNode = node;
+                    break;
+                }
+            }
+
+            if (currentNode is null)
+            {
+                return null;
+            }
+
+            currentCollection = currentNode.Children;
+        }
+
+        return currentNode;
+    }
+
+    /// <summary>
+    /// Disposes the view model and stops file watching.
+    /// </summary>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _fileWatcherService.FileSystemChanged -= OnFileSystemChanged;
+        _fileWatcherService.StopWatching();
     }
 }
