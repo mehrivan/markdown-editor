@@ -1,10 +1,27 @@
+using System.Timers;
+
+using Avalonia.Threading;
+
 namespace Markdown.UI.Desktop.ViewModels;
+
+/// <summary>
+/// Types of feedback messages for styling purposes.
+/// </summary>
+internal enum FeedbackType
+{
+    Success,
+    Error,
+    Info
+}
 
 /// <summary>
 /// ViewModel for the status bar displaying document and application status.
 /// </summary>
-internal sealed partial class StatusBarViewModel : ViewModelBase
+internal sealed partial class StatusBarViewModel : ViewModelBase, IDisposable
 {
+    private System.Timers.Timer? _feedbackTimer;
+    private bool _disposed;
+
     /// <summary>
     /// Current cursor line position (1-based).
     /// </summary>
@@ -41,6 +58,36 @@ internal sealed partial class StatusBarViewModel : ViewModelBase
     /// </summary>
     [ObservableProperty]
     private bool _isModified;
+
+    /// <summary>
+    /// Indicates whether a loading operation is in progress.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isLoading;
+
+    /// <summary>
+    /// Message to display during loading operations.
+    /// </summary>
+    [ObservableProperty]
+    private string _loadingMessage = string.Empty;
+
+    /// <summary>
+    /// Transient feedback message to display (success, error, info).
+    /// </summary>
+    [ObservableProperty]
+    private string _feedbackMessage = string.Empty;
+
+    /// <summary>
+    /// Indicates whether there is a feedback message to display.
+    /// </summary>
+    [ObservableProperty]
+    private bool _hasFeedback;
+
+    /// <summary>
+    /// Indicates whether the current feedback is an error (for styling).
+    /// </summary>
+    [ObservableProperty]
+    private bool _isError;
 
     /// <summary>
     /// Display text for auto-save status.
@@ -87,5 +134,85 @@ internal sealed partial class StatusBarViewModel : ViewModelBase
         Column = 1;
         TotalLines = 0;
         IsModified = false;
+    }
+
+    /// <summary>
+    /// Sets the loading state with a message.
+    /// </summary>
+    /// <param name="message">The loading message to display.</param>
+    public void SetLoading(string message)
+    {
+        IsLoading = true;
+        LoadingMessage = message;
+    }
+
+    /// <summary>
+    /// Clears the loading state.
+    /// </summary>
+    public void ClearLoading()
+    {
+        IsLoading = false;
+        LoadingMessage = string.Empty;
+    }
+
+    /// <summary>
+    /// Shows a transient feedback message that auto-clears after the specified duration.
+    /// </summary>
+    /// <param name="message">The message to display.</param>
+    /// <param name="type">The type of feedback (affects styling).</param>
+    /// <param name="durationMs">Duration in milliseconds before auto-clearing (default 3000ms).</param>
+    public void ShowFeedback(string message, FeedbackType type = FeedbackType.Success, int durationMs = 3000)
+    {
+        // Stop any existing timer
+        _feedbackTimer?.Stop();
+        _feedbackTimer?.Dispose();
+
+        FeedbackMessage = message;
+        HasFeedback = true;
+        IsError = type == FeedbackType.Error;
+
+        // Start a new timer to auto-clear the feedback
+        _feedbackTimer = new System.Timers.Timer(durationMs);
+        _feedbackTimer.Elapsed += OnFeedbackTimerElapsed;
+        _feedbackTimer.AutoReset = false;
+        _feedbackTimer.Start();
+    }
+
+    /// <summary>
+    /// Clears any displayed feedback message.
+    /// </summary>
+    public void ClearFeedback()
+    {
+        // Must dispatch to UI thread since timer fires on a background thread
+        Dispatcher.UIThread.Post(() =>
+        {
+            HasFeedback = false;
+            FeedbackMessage = string.Empty;
+            IsError = false;
+        });
+    }
+
+    /// <summary>
+    /// Handles the feedback timer elapsed event.
+    /// </summary>
+    private void OnFeedbackTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        ClearFeedback();
+    }
+
+    /// <summary>
+    /// Disposes of resources used by the StatusBarViewModel.
+    /// </summary>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _feedbackTimer?.Stop();
+        _feedbackTimer?.Dispose();
+        _feedbackTimer = null;
     }
 }
