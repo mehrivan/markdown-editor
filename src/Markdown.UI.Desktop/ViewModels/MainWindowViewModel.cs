@@ -269,12 +269,20 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
 
         if (!string.IsNullOrEmpty(path))
         {
-            await FileExplorer.LoadWorkspaceAsync(path);
+            StatusBar.SetLoading("Loading workspace...");
+            try
+            {
+                await FileExplorer.LoadWorkspaceAsync(path);
 
-            // Save as last workspace
-            var settings = _settingsService.Load();
-            settings.LastWorkspacePath = path;
-            await _settingsService.SaveAsync(settings);
+                // Save as last workspace
+                var settings = _settingsService.Load();
+                settings.LastWorkspacePath = path;
+                await _settingsService.SaveAsync(settings);
+            }
+            finally
+            {
+                StatusBar.ClearLoading();
+            }
         }
     }
 
@@ -432,7 +440,9 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         // Open the document
+        var fileName = Path.GetFileName(path);
         SetBusy();
+        StatusBar.SetLoading("Opening file...");
         try
         {
             var result = await _documentService.OpenAsync(path);
@@ -448,12 +458,13 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
             {
                 await _dialogService.ShowErrorDialogAsync(
                     _visual,
-                    "Failed to Open File",
+                    $"Failed to open '{fileName}'",
                     result.Error ?? "An unknown error occurred.");
             }
         }
         finally
         {
+            StatusBar.ClearLoading();
             ClearBusy();
         }
     }
@@ -465,7 +476,9 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        var fileName = Path.GetFileName(tab.FilePath);
         SetBusy();
+        StatusBar.SetLoading("Saving...");
         try
         {
             // Create or update the document
@@ -493,17 +506,19 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
             if (result.IsSuccess)
             {
                 tab.MarkSaved();
+                StatusBar.ShowFeedback("Saved");
             }
             else if (_visual is not null)
             {
                 await _dialogService.ShowErrorDialogAsync(
                     _visual,
-                    "Failed to Save File",
+                    $"Failed to save '{fileName}'",
                     result.Error ?? "An unknown error occurred.");
             }
         }
         finally
         {
+            StatusBar.ClearLoading();
             ClearBusy();
         }
     }
@@ -584,18 +599,16 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
         // Find the tab and mark it as saved
         var tab = Tabs.FirstOrDefault(t => t.Id == e.TabId);
         tab?.MarkSaved();
+
+        // Show non-intrusive success feedback in status bar
+        StatusBar.ShowFeedback("Auto-saved");
     }
 
-    private async void OnAutoSaveFailed(object? sender, AutoSaveFailedEventArgs e)
+    private void OnAutoSaveFailed(object? sender, AutoSaveFailedEventArgs e)
     {
-        // Show non-intrusive notification via status bar or dialog
-        if (_visual is not null)
-        {
-            await _dialogService.ShowErrorDialogAsync(
-                _visual,
-                "Auto-save Failed",
-                e.Error);
-        }
+        // Show non-intrusive error notification via status bar (5 seconds for errors)
+        var fileName = Path.GetFileName(e.FilePath);
+        StatusBar.ShowFeedback($"Auto-save failed: {fileName}", FeedbackType.Error, 5000);
     }
 
     #endregion
