@@ -94,20 +94,18 @@
                   RowDefinitions="Auto,*"
                   Background="{DynamicResource EditorBackgroundBrush}">
 
-                <!-- Tab Bar -->
-                <views:TabBarView Grid.Row="0"
-                                  DataContext="{Binding}"
-                                  IsVisible="{Binding Tabs.Count}" />
+                <!-- Tab Bar - Always visible -->
+                <views:TabBarView Grid.Row="0" />
 
                 <!-- Editor Content Area -->
                 <Grid Grid.Row="1">
                     <!-- Active Editor (when tabs exist) -->
-                    <Border IsVisible="{Binding ActiveTab, Converter={x:Static ObjectConverters.IsNotNull}}">
-                        <views:EditorView DataContext="{Binding ActiveTab.Editor}" />
+                    <Border IsVisible="{Binding HasActiveTab}">
+                        <views:EditorView DataContext="{Binding ActiveEditor}" />
                     </Border>
 
                     <!-- Empty State (when no tabs) -->
-                    <Border IsVisible="{Binding !Tabs.Count}"
+                    <Border IsVisible="{Binding !HasActiveTab}"
                             Background="{DynamicResource EditorBackgroundBrush}">
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"

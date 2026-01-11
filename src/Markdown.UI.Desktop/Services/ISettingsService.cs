@@ -3,7 +3,7 @@ namespace Markdown.UI.Desktop.Services;
 /// <summary>
 /// Service for loading and saving application settings.
 /// </summary>
-internal interface ISettingsService
+public interface ISettingsService
 {
     /// <summary>
     /// Gets the full path to the settings file.

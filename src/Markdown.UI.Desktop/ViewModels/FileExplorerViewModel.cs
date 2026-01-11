@@ -10,7 +10,7 @@ namespace Markdown.UI.Desktop.ViewModels;
 /// <summary>
 /// ViewModel for the file explorer panel, managing workspace navigation.
 /// </summary>
-internal sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
+public sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
 {
     private readonly IWorkspaceExplorer _workspaceExplorer;
     private readonly IFileWatcherService _fileWatcherService;

@@ -5,7 +5,7 @@ namespace Markdown.UI.Desktop.ViewModels;
 /// <summary>
 /// ViewModel representing an open document tab.
 /// </summary>
-internal sealed partial class TabViewModel : ViewModelBase
+public sealed partial class TabViewModel : ViewModelBase
 {
     /// <summary>
     /// Unique identifier for this tab.

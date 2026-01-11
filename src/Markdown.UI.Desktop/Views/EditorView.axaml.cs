@@ -1,6 +1,9 @@
-using Avalonia.Controls;
+using System.Diagnostics;
 
-using AvaloniaEdit;
+using Avalonia.Controls;
+using Avalonia.Threading;
+
+using AvaloniaEdit.Document;
 
 using Markdown.UI.Desktop.ViewModels;
 
@@ -14,6 +17,7 @@ internal partial class EditorView : UserControl
 {
     private EditorViewModel? _viewModel;
     private bool _isUpdatingFromViewModel;
+    private bool _isEditorEventsSubscribed;
 
     public EditorView()
     {
@@ -37,12 +41,23 @@ internal partial class EditorView : UserControl
             // Subscribe to ViewModel changes
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
-            // Initial sync from ViewModel to editor
-            SyncContentFromViewModel();
+            // Subscribe to editor events only once
+            if (!_isEditorEventsSubscribed)
+            {
+                TextEditor.TextChanged += OnTextEditorTextChanged;
+                TextEditor.TextArea.Caret.PositionChanged += OnCaretPositionChanged;
+                _isEditorEventsSubscribed = true;
+            }
 
-            // Subscribe to editor events
-            TextEditor.TextChanged += OnTextEditorTextChanged;
-            TextEditor.TextArea.Caret.PositionChanged += OnCaretPositionChanged;
+            // Initial sync - capture content now, then apply on UI thread
+            var content = _viewModel.Content;
+            Debug.WriteLine($"[EditorView] DataContextChanged - Content length: {content?.Length ?? 0}");
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                Debug.WriteLine($"[EditorView] Applying content to TextEditor, length: {content?.Length ?? 0}");
+                ApplyContentToEditor(content ?? string.Empty);
+            }, DispatcherPriority.Loaded);
         }
     }
 
@@ -50,7 +65,14 @@ internal partial class EditorView : UserControl
     {
         if (e.PropertyName == nameof(EditorViewModel.Content) && !_isUpdatingFromViewModel)
         {
-            SyncContentFromViewModel();
+            if (Dispatcher.UIThread.CheckAccess())
+            {
+                SyncContentFromViewModel();
+            }
+            else
+            {
+                Dispatcher.UIThread.Post(SyncContentFromViewModel);
+            }
         }
     }
 
@@ -61,12 +83,20 @@ internal partial class EditorView : UserControl
             return;
         }
 
+        ApplyContentToEditor(_viewModel.Content);
+    }
+
+    private void ApplyContentToEditor(string content)
+    {
         _isUpdatingFromViewModel = true;
         try
         {
-            if (TextEditor.Text != _viewModel.Content)
+            // Use Document.Text for more reliable updates
+            if (TextEditor.Document.Text != content)
             {
-                TextEditor.Text = _viewModel.Content;
+                Debug.WriteLine($"[EditorView] Setting Document.Text, content preview: {(content?.Length > 0 ? content[..Math.Min(50, content.Length)] : "(empty)")}...");
+                TextEditor.Document = new TextDocument(content ?? string.Empty);
+                TextEditor.ScrollToHome();
             }
         }
         finally
@@ -83,7 +113,7 @@ internal partial class EditorView : UserControl
         }
 
         // Sync text from editor to ViewModel
-        _viewModel.Content = TextEditor.Text;
+        _viewModel.Content = TextEditor.Document.Text;
     }
 
     private void OnCaretPositionChanged(object? sender, EventArgs e)

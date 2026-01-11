@@ -14,7 +14,7 @@ namespace Markdown.UI.Desktop.ViewModels;
 /// <summary>
 /// Main ViewModel orchestrating the application's primary window.
 /// </summary>
-internal sealed partial class MainWindowViewModel : ViewModelBase
+public sealed partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IDocumentService _documentService;
     private readonly IDialogService _dialogService;
@@ -41,7 +41,19 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
     /// The currently active tab.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasActiveTab))]
+    [NotifyPropertyChangedFor(nameof(ActiveEditor))]
     private TabViewModel? _activeTab;
+
+    /// <summary>
+    /// Indicates whether there is an active tab.
+    /// </summary>
+    public bool HasActiveTab => ActiveTab is not null;
+
+    /// <summary>
+    /// The active tab's editor, or null if no active tab.
+    /// </summary>
+    public EditorViewModel? ActiveEditor => ActiveTab?.Editor;
 
     /// <summary>
     /// The file explorer ViewModel.
@@ -105,6 +117,35 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
         PreviousTabCommand = new RelayCommand(PreviousTab, () => Tabs.Count > 1);
         ToggleSidebarCommand = new RelayCommand(ToggleSidebar);
         ToggleThemeCommand = new RelayCommand(ToggleTheme);
+
+        // Create a welcome tab on startup for testing
+        CreateWelcomeTab();
+    }
+
+    private void CreateWelcomeTab()
+    {
+        Console.WriteLine($"[DEBUG] CreateWelcomeTab called, Tabs.Count before: {Tabs.Count}");
+        System.Diagnostics.Debug.WriteLine($"[DEBUG] CreateWelcomeTab called, Tabs.Count before: {Tabs.Count}");
+
+        var welcomeContent = @"# Welcome to Markdown Editor
+
+This is a test document to verify the editor is working correctly.
+
+## Features
+- **Bold** and *italic* text
+- Code blocks
+- Lists and more
+
+Start editing or open a file to begin!
+";
+        var tab = TabViewModel.CreateNew();
+        tab.Title = "Welcome";
+        tab.Editor.LoadContent(welcomeContent);
+        Tabs.Add(tab);
+        ActiveTab = tab;
+
+        Console.WriteLine($"[DEBUG] CreateWelcomeTab done, Tabs.Count after: {Tabs.Count}, Tab Title: {tab.Title}");
+        System.Diagnostics.Debug.WriteLine($"[DEBUG] CreateWelcomeTab done, Tabs.Count after: {Tabs.Count}, Tab Title: {tab.Title}");
     }
 
     #region Commands
@@ -194,6 +235,8 @@ internal sealed partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     partial void OnActiveTabChanged(TabViewModel? value)
     {
+        Console.WriteLine($"[DEBUG] OnActiveTabChanged: ActiveTab = {value?.Title ?? "null"}, HasActiveTab = {HasActiveTab}, ActiveEditor = {ActiveEditor?.GetType().Name ?? "null"}");
+
         // Unsubscribe from previous tab
         if (_previousActiveTab is not null)
         {

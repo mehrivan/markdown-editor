@@ -4,7 +4,7 @@ namespace Markdown.UI.Desktop.ViewModels;
 /// Base class for all ViewModels in the application.
 /// Inherits from ObservableObject to provide INotifyPropertyChanged implementation.
 /// </summary>
-internal abstract partial class ViewModelBase : ObservableObject
+public abstract partial class ViewModelBase : ObservableObject
 {
     /// <summary>
     /// Indicates whether the ViewModel is currently busy performing an operation.
