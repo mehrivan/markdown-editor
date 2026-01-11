@@ -3,7 +3,7 @@ namespace Markdown.UI.Desktop.Services;
 /// <summary>
 /// Event arguments for a successful auto-save operation.
 /// </summary>
-internal sealed class AutoSaveCompletedEventArgs : EventArgs
+public sealed class AutoSaveCompletedEventArgs : EventArgs
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AutoSaveCompletedEventArgs"/> class.
@@ -30,7 +30,7 @@ internal sealed class AutoSaveCompletedEventArgs : EventArgs
 /// <summary>
 /// Event arguments for a failed auto-save operation.
 /// </summary>
-internal sealed class AutoSaveFailedEventArgs : EventArgs
+public sealed class AutoSaveFailedEventArgs : EventArgs
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AutoSaveFailedEventArgs"/> class.

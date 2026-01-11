@@ -3,7 +3,7 @@ namespace Markdown.UI.Desktop.Services;
 /// <summary>
 /// Service for managing application theme (Light/Dark/System).
 /// </summary>
-internal interface IThemeService
+public interface IThemeService
 {
     /// <summary>
     /// Gets the current theme mode.
@@ -37,7 +37,7 @@ internal interface IThemeService
 /// <summary>
 /// Represents the application theme mode.
 /// </summary>
-internal enum ThemeMode
+public enum ThemeMode
 {
     /// <summary>
     /// Light theme with bright backgrounds.

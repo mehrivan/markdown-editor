@@ -5,7 +5,7 @@ namespace Markdown.UI.Desktop.Services;
 /// <summary>
 /// Service for displaying native file dialogs and message boxes.
 /// </summary>
-internal interface IDialogService
+public interface IDialogService
 {
     /// <summary>
     /// Shows an open file dialog.

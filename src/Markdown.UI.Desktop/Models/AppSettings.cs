@@ -3,7 +3,7 @@ namespace Markdown.UI.Desktop.Models;
 /// <summary>
 /// Application settings that are persisted across sessions.
 /// </summary>
-internal sealed class AppSettings
+public sealed class AppSettings
 {
     /// <summary>
     /// The width of the main window in pixels.

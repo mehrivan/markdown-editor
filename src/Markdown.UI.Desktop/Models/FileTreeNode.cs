@@ -7,7 +7,7 @@ namespace Markdown.UI.Desktop.Models;
 /// <summary>
 /// Observable model representing a node in the file explorer tree view.
 /// </summary>
-internal sealed partial class FileTreeNode : ObservableObject
+public sealed partial class FileTreeNode : ObservableObject
 {
     /// <summary>
     /// The display name of the file or folder.

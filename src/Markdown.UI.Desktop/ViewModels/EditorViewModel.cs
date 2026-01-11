@@ -3,7 +3,7 @@ namespace Markdown.UI.Desktop.ViewModels;
 /// <summary>
 /// ViewModel for the text editor, managing content and caret position.
 /// </summary>
-internal sealed partial class EditorViewModel : ViewModelBase
+public sealed partial class EditorViewModel : ViewModelBase
 {
     private bool _isLoadingContent;
 

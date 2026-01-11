@@ -7,7 +7,7 @@ namespace Markdown.UI.Desktop.ViewModels;
 /// <summary>
 /// Types of feedback messages for styling purposes.
 /// </summary>
-internal enum FeedbackType
+public enum FeedbackType
 {
     Success,
     Error,
@@ -17,7 +17,7 @@ internal enum FeedbackType
 /// <summary>
 /// ViewModel for the status bar displaying document and application status.
 /// </summary>
-internal sealed partial class StatusBarViewModel : ViewModelBase, IDisposable
+public sealed partial class StatusBarViewModel : ViewModelBase, IDisposable
 {
     private System.Timers.Timer? _feedbackTimer;
     private bool _disposed;

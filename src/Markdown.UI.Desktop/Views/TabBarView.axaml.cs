@@ -28,6 +28,9 @@ internal partial class TabBarView : UserControl
 
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
+        Console.WriteLine($"[DEBUG] TabBarView.OnDataContextChanged: DataContext type = {DataContext?.GetType().Name ?? "null"}");
+        System.Diagnostics.Debug.WriteLine($"[DEBUG] TabBarView.OnDataContextChanged: DataContext type = {DataContext?.GetType().Name ?? "null"}");
+
         if (_viewModel is not null)
         {
             _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
@@ -37,8 +40,21 @@ internal partial class TabBarView : UserControl
 
         if (_viewModel is not null)
         {
+            Console.WriteLine($"[DEBUG] TabBarView: ViewModel assigned, Tabs.Count = {_viewModel.Tabs.Count}");
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] TabBarView: ViewModel assigned, Tabs.Count = {_viewModel.Tabs.Count}");
+            foreach (var tab in _viewModel.Tabs)
+            {
+                Console.WriteLine($"[DEBUG] TabBarView: Tab found - Title: {tab.Title}, DisplayTitle: {tab.DisplayTitle}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] TabBarView: Tab found - Title: {tab.Title}, DisplayTitle: {tab.DisplayTitle}");
+            }
+
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             UpdateActiveTabStyling();
+        }
+        else
+        {
+            Console.WriteLine("[DEBUG] TabBarView: DataContext is not MainWindowViewModel");
+            System.Diagnostics.Debug.WriteLine("[DEBUG] TabBarView: DataContext is not MainWindowViewModel");
         }
     }
 

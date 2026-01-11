@@ -5,7 +5,7 @@ namespace Markdown.UI.Desktop.Services;
 /// <summary>
 /// Service for managing automatic document saving with debounce functionality.
 /// </summary>
-internal interface IAutoSaveService : IDisposable
+public interface IAutoSaveService : IDisposable
 {
     /// <summary>
     /// Gets or sets whether auto-save is enabled.

@@ -3,7 +3,7 @@ namespace Markdown.Desktop.Services;
 /// <summary>
 /// Service for watching file system changes in a directory.
 /// </summary>
-internal interface IFileWatcherService : IDisposable
+public interface IFileWatcherService : IDisposable
 {
     /// <summary>
     /// Starts watching the specified directory for file system changes.
@@ -35,7 +35,7 @@ internal interface IFileWatcherService : IDisposable
 /// <summary>
 /// Event arguments for file system change events.
 /// </summary>
-internal sealed class FileSystemChangeEventArgs : EventArgs
+public sealed class FileSystemChangeEventArgs : EventArgs
 {
     /// <summary>
     /// Gets the full path of the affected file or directory.
@@ -61,7 +61,7 @@ internal sealed class FileSystemChangeEventArgs : EventArgs
 /// <summary>
 /// Specifies the type of file system change.
 /// </summary>
-internal enum FileSystemChangeType
+public enum FileSystemChangeType
 {
     /// <summary>
     /// A file or directory was created.
