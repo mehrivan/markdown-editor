@@ -1,11 +1,15 @@
 using System.Diagnostics;
 
 using Avalonia.Controls;
+using Avalonia.Styling;
 using Avalonia.Threading;
 
 using AvaloniaEdit.Document;
+using AvaloniaEdit.TextMate;
 
 using Markdown.UI.Desktop.ViewModels;
+
+using TextMateSharp.Grammars;
 
 namespace Markdown.UI.Desktop.Views;
 
@@ -18,10 +22,21 @@ public partial class EditorView : UserControl
     private EditorViewModel? _viewModel;
     private bool _isUpdatingFromViewModel;
     private bool _isEditorEventsSubscribed;
+    private TextMate.Installation? _textMateInstallation;
+    private RegistryOptions? _registryOptions;
 
     public EditorView()
     {
         InitializeComponent();
+
+        // Initialize TextMate with appropriate theme based on current app theme
+        InitializeTextMate();
+
+        // Subscribe to theme changes to update syntax highlighting theme
+        if (Avalonia.Application.Current is not null)
+        {
+            Avalonia.Application.Current.ActualThemeVariantChanged += OnThemeChanged;
+        }
 
         DataContextChanged += OnDataContextChanged;
     }
@@ -96,6 +111,9 @@ public partial class EditorView : UserControl
             {
                 TextEditor.Document = new TextDocument(content ?? string.Empty);
                 TextEditor.ScrollToHome();
+
+                // Re-apply grammar after document replacement
+                ApplyMarkdownGrammar();
             }
         }
         finally
@@ -124,5 +142,69 @@ public partial class EditorView : UserControl
 
         var caret = TextEditor.TextArea.Caret;
         _viewModel.UpdateCaretPosition(caret.Line, caret.Column);
+    }
+
+    private void InitializeTextMate()
+    {
+        try
+        {
+            // Determine the theme based on current app theme
+            ThemeName themeName = GetThemeNameFromAppTheme();
+
+            // Initialize TextMate registry with the theme
+            _registryOptions = new RegistryOptions(themeName);
+
+            // Install TextMate on the TextEditor
+            _textMateInstallation = TextEditor.InstallTextMate(_registryOptions);
+
+            // Apply Markdown grammar
+            ApplyMarkdownGrammar();
+
+            Debug.WriteLine($"[EditorView] TextMate initialized with theme: {themeName}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[EditorView] Failed to initialize TextMate: {ex.Message}");
+        }
+    }
+
+    private void ApplyMarkdownGrammar()
+    {
+        if (_registryOptions is null || _textMateInstallation is null)
+        {
+            return;
+        }
+
+        try
+        {
+            // Get Markdown language by file extension
+            Language markdownLanguage = _registryOptions.GetLanguageByExtension(".md");
+            string scopeName = _registryOptions.GetScopeByLanguageId(markdownLanguage.Id);
+
+            // Apply the grammar
+            _textMateInstallation.SetGrammar(scopeName);
+
+            Debug.WriteLine($"[EditorView] Applied Markdown grammar: {scopeName}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[EditorView] Failed to apply Markdown grammar: {ex.Message}");
+        }
+    }
+
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        // Reinitialize TextMate with the new theme
+        InitializeTextMate();
+    }
+
+    private ThemeName GetThemeNameFromAppTheme()
+    {
+        if (Avalonia.Application.Current?.ActualThemeVariant == ThemeVariant.Light)
+        {
+            return ThemeName.LightPlus;
+        }
+
+        return ThemeName.DarkPlus;
     }
 }
