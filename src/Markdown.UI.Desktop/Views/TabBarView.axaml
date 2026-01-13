@@ -21,30 +21,58 @@
         </Style>
     </UserControl.Styles>
 
-    <!-- DEBUG: Using bright colors to verify rendering -->
-    <Border Background="#FF5500"
+    <Border Background="{DynamicResource TabBorderBrush}"
             Height="35">
         <ScrollViewer HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Disabled">
             <ItemsControl x:Name="TabsItemsControl"
-                          ItemsSource="{Binding Tabs}"
-                          Background="#00FF00">
+                          ItemsSource="{Binding Tabs}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <!-- DEBUG: Simplified template to test if items render at all -->
-                    <DataTemplate>
-                        <Border Background="Red"
-                                Width="120"
-                                Height="30"
-                                Margin="2">
-                            <TextBlock Text="{Binding DisplayTitle, FallbackValue='NO BINDING'}"
-                                       Foreground="White"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
+                    <DataTemplate DataType="vm:TabViewModel">
+                        <Border Classes="tab-item"
+                                MinWidth="120"
+                                MaxWidth="200"
+                                Padding="12,0,4,0"
+                                BorderBrush="{DynamicResource TabBorderBrush}"
+                                BorderThickness="0,0,1,0"
+                                Cursor="Hand">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <!-- Tab Title -->
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding DisplayTitle}"
+                                           Foreground="{DynamicResource TextBrush}"
+                                           FontSize="13"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip.Tip="{Binding FilePath}" />
+
+                                <!-- Close Button -->
+                                <Button Grid.Column="1"
+                                        Classes="close-btn"
+                                        Width="20"
+                                        Height="20"
+                                        Margin="8,0,0,0"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Command="{Binding $parent[ItemsControl].((vm:MainWindowViewModel)DataContext).CloseTabCommand}"
+                                        CommandParameter="{Binding}"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalContentAlignment="Center"
+                                        Cursor="Hand">
+                                    <TextBlock Text="&#x2715;"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Button>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
