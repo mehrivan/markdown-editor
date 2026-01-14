@@ -37,6 +37,7 @@
         <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenFileCommand}" />
         <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+Alt+S" Command="{Binding SaveAllCommand}" />
         <KeyBinding Gesture="Ctrl+W" Command="{Binding CloseTabCommand}" />
         <KeyBinding Gesture="Ctrl+Tab" Command="{Binding NextTabCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+Tab" Command="{Binding PreviousTabCommand}" />
@@ -44,6 +45,54 @@
     </Window.KeyBindings>
 
     <DockPanel>
+        <!-- Menu Bar (Top) -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New File"
+                          Command="{Binding NewFileCommand}"
+                          InputGesture="Ctrl+N" />
+                <Separator />
+                <MenuItem Header="_Open File..."
+                          Command="{Binding OpenFileCommand}"
+                          InputGesture="Ctrl+O" />
+                <MenuItem Header="Open _Folder..."
+                          Command="{Binding OpenFolderCommand}" />
+                <Separator />
+                <MenuItem Header="_Save"
+                          Command="{Binding SaveCommand}"
+                          InputGesture="Ctrl+S" />
+                <MenuItem Header="Save _As..."
+                          Command="{Binding SaveAsCommand}"
+                          InputGesture="Ctrl+Shift+S" />
+                <MenuItem Header="Save A_ll"
+                          Command="{Binding SaveAllCommand}"
+                          InputGesture="Ctrl+Shift+Alt+S" />
+                <Separator />
+                <MenuItem Header="E_xit"
+                          Command="{Binding ExitCommand}"
+                          InputGesture="Alt+F4" />
+            </MenuItem>
+
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo"
+                          Command="{Binding UndoCommand}"
+                          InputGesture="Ctrl+Z" />
+                <MenuItem Header="_Redo"
+                          Command="{Binding RedoCommand}"
+                          InputGesture="Ctrl+Y" />
+                <Separator />
+                <MenuItem Header="Cu_t"
+                          Command="{Binding CutCommand}"
+                          InputGesture="Ctrl+X" />
+                <MenuItem Header="_Copy"
+                          Command="{Binding CopyCommand}"
+                          InputGesture="Ctrl+C" />
+                <MenuItem Header="_Paste"
+                          Command="{Binding PasteCommand}"
+                          InputGesture="Ctrl+V" />
+            </MenuItem>
+        </Menu>
+
         <!-- Status Bar (Bottom) -->
         <views:StatusBarView DockPanel.Dock="Bottom"
                              DataContext="{Binding StatusBar}" />

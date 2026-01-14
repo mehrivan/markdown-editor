@@ -128,6 +128,69 @@ internal sealed class DialogService : IDialogService
         await ShowMessageDialogAsync(visual, title, message, isError: false).ConfigureAwait(true);
     }
 
+    /// <inheritdoc />
+    public async Task<bool?> ShowThreeButtonConfirmationAsync(
+        Visual visual,
+        string title,
+        string message,
+        string saveButton = "Save",
+        string dontSaveButton = "Don't Save",
+        string cancelButton = "Cancel")
+    {
+        var topLevel = GetTopLevel(visual);
+        if (topLevel is not Window window)
+        {
+            return null;
+        }
+
+        var dialog = new Window
+        {
+            Title = title,
+            Width = 450,
+            Height = 180,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            ShowInTaskbar = false,
+            Content = CreateThreeButtonContent(
+                message,
+                saveButton,
+                dontSaveButton,
+                cancelButton,
+                out var saveBtn,
+                out var dontSaveBtn,
+                out var cancelBtn),
+        };
+
+        var tcs = new TaskCompletionSource<bool?>();
+
+        saveBtn.Click += (_, _) =>
+        {
+            tcs.TrySetResult(true);
+            dialog.Close();
+        };
+
+        dontSaveBtn.Click += (_, _) =>
+        {
+            tcs.TrySetResult(false);
+            dialog.Close();
+        };
+
+        cancelBtn.Click += (_, _) =>
+        {
+            tcs.TrySetResult(null);
+            dialog.Close();
+        };
+
+        dialog.Closing += (_, _) =>
+        {
+            tcs.TrySetResult(null);
+        };
+
+        await dialog.ShowDialog(window).ConfigureAwait(true);
+
+        return await tcs.Task.ConfigureAwait(true);
+    }
+
     private static async Task ShowMessageDialogAsync(Visual visual, string title, string message, bool isError)
     {
         var topLevel = GetTopLevel(visual);
@@ -274,6 +337,61 @@ internal sealed class DialogService : IDialogService
                         : null,
                 },
                 okButton,
+            },
+        };
+    }
+
+    private static StackPanel CreateThreeButtonContent(
+        string message,
+        string saveButtonText,
+        string dontSaveButtonText,
+        string cancelButtonText,
+        out Button saveButton,
+        out Button dontSaveButton,
+        out Button cancelButton)
+    {
+        saveButton = new Button
+        {
+            Content = saveButtonText,
+            Width = 100,
+            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+        };
+
+        dontSaveButton = new Button
+        {
+            Content = dontSaveButtonText,
+            Width = 100,
+            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+        };
+
+        cancelButton = new Button
+        {
+            Content = cancelButtonText,
+            Width = 100,
+            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+        };
+
+        var buttonPanel = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            Spacing = 10,
+            Children = { saveButton, dontSaveButton, cancelButton },
+        };
+
+        return new StackPanel
+        {
+            Margin = new Thickness(20),
+            Spacing = 20,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = message,
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                },
+                buttonPanel,
             },
         };
     }

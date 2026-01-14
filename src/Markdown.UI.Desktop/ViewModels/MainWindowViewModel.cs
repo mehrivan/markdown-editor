@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 
 using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 
 using Markdown.Application.Services;
 using Markdown.Desktop.Services;
@@ -54,6 +55,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     [ObservableProperty]
     private EditorViewModel? _activeEditor;
+
+    /// <summary>
+    /// Indicates whether edit commands can be executed (true when there is an active editor).
+    /// </summary>
+    [ObservableProperty]
+    private bool _canExecuteEditCommands;
 
     /// <summary>
     /// The file explorer ViewModel.
@@ -112,11 +119,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OpenFolderCommand = new AsyncRelayCommand(OpenFolderAsync);
         SaveCommand = new AsyncRelayCommand(SaveAsync, CanSave);
         SaveAsCommand = new AsyncRelayCommand(SaveAsAsync, CanSave);
+        SaveAllCommand = new AsyncRelayCommand(SaveAllAsync);
+        ExitCommand = new AsyncRelayCommand(ExitAsync);
         CloseTabCommand = new AsyncRelayCommand<TabViewModel>(CloseTabAsync);
         NextTabCommand = new RelayCommand(NextTab, () => Tabs.Count > 1);
         PreviousTabCommand = new RelayCommand(PreviousTab, () => Tabs.Count > 1);
         ToggleSidebarCommand = new RelayCommand(ToggleSidebar);
         ToggleThemeCommand = new RelayCommand(ToggleTheme);
+        UndoCommand = new RelayCommand(Undo, () => CanExecuteEditCommands);
+        RedoCommand = new RelayCommand(Redo, () => CanExecuteEditCommands);
+        CutCommand = new RelayCommand(Cut, () => CanExecuteEditCommands);
+        CopyCommand = new RelayCommand(Copy, () => CanExecuteEditCommands);
+        PasteCommand = new RelayCommand(Paste, () => CanExecuteEditCommands);
 
         // Create a welcome tab on startup for testing
         CreateWelcomeTab();
@@ -194,6 +208,41 @@ Start editing or open a file to begin!
     /// </summary>
     public IRelayCommand ToggleThemeCommand { get; }
 
+    /// <summary>
+    /// Command to save all modified documents.
+    /// </summary>
+    public IAsyncRelayCommand SaveAllCommand { get; }
+
+    /// <summary>
+    /// Command to exit the application.
+    /// </summary>
+    public IAsyncRelayCommand ExitCommand { get; }
+
+    /// <summary>
+    /// Command to undo the last change in the active editor.
+    /// </summary>
+    public IRelayCommand UndoCommand { get; }
+
+    /// <summary>
+    /// Command to redo the last undone change in the active editor.
+    /// </summary>
+    public IRelayCommand RedoCommand { get; }
+
+    /// <summary>
+    /// Command to cut selected text in the active editor.
+    /// </summary>
+    public IRelayCommand CutCommand { get; }
+
+    /// <summary>
+    /// Command to copy selected text in the active editor.
+    /// </summary>
+    public IRelayCommand CopyCommand { get; }
+
+    /// <summary>
+    /// Command to paste text into the active editor.
+    /// </summary>
+    public IRelayCommand PasteCommand { get; }
+
     #endregion
 
     #region Public Methods
@@ -262,6 +311,21 @@ Start editing or open a file to begin!
         // Notify commands that depend on active tab
         SaveCommand.NotifyCanExecuteChanged();
         SaveAsCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Called when the active editor changes.
+    /// </summary>
+    partial void OnActiveEditorChanged(EditorViewModel? value)
+    {
+        CanExecuteEditCommands = value is not null;
+
+        // Notify edit commands
+        UndoCommand.NotifyCanExecuteChanged();
+        RedoCommand.NotifyCanExecuteChanged();
+        CutCommand.NotifyCanExecuteChanged();
+        CopyCommand.NotifyCanExecuteChanged();
+        PasteCommand.NotifyCanExecuteChanged();
     }
 
     #endregion
@@ -459,6 +523,107 @@ Start editing or open a file to begin!
     private void ToggleTheme()
     {
         _themeService.ToggleTheme();
+    }
+
+    private async Task SaveAllAsync()
+    {
+        TabViewModel[] modifiedTabs = Tabs.Where(t => t.IsModified).ToArray();
+
+        if (modifiedTabs.Length == 0)
+        {
+            StatusBar.ShowFeedback("No unsaved changes");
+            return;
+        }
+
+        SetBusy();
+        StatusBar.SetLoading($"Saving {modifiedTabs.Length} file(s)...");
+        try
+        {
+            foreach (TabViewModel tab in modifiedTabs)
+            {
+                if (tab.IsNewDocument)
+                {
+                    // Skip untitled documents - they need Save As
+                    continue;
+                }
+
+                await SaveDocumentAsync(tab);
+            }
+
+            StatusBar.ShowFeedback("All files saved");
+        }
+        finally
+        {
+            StatusBar.ClearLoading();
+            ClearBusy();
+        }
+    }
+
+    private async Task ExitAsync()
+    {
+        if (_visual is null)
+        {
+            return;
+        }
+
+        // Check for unsaved changes
+        TabViewModel[] modifiedTabs = Tabs.Where(t => t.IsModified).ToArray();
+
+        if (modifiedTabs.Length > 0)
+        {
+            string message = modifiedTabs.Length == 1
+                ? $"Do you want to save changes to {modifiedTabs[0].Title}?"
+                : $"Do you want to save changes to {modifiedTabs.Length} file(s)?";
+
+            bool? result = await _dialogService.ShowThreeButtonConfirmationAsync(
+                _visual,
+                "Unsaved Changes",
+                message,
+                "Save All",
+                "Don't Save",
+                "Cancel");
+
+            if (result == true) // Save All
+            {
+                await SaveAllAsync();
+            }
+            else if (result == null) // Cancel
+            {
+                return;
+            }
+            // else: Don't Save - continue to exit
+        }
+
+        // Close the application
+        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+        {
+            lifetime.Shutdown();
+        }
+    }
+
+    private void Undo()
+    {
+        ActiveEditor?.Undo();
+    }
+
+    private void Redo()
+    {
+        ActiveEditor?.Redo();
+    }
+
+    private void Cut()
+    {
+        ActiveEditor?.Cut();
+    }
+
+    private void Copy()
+    {
+        ActiveEditor?.Copy();
+    }
+
+    private void Paste()
+    {
+        ActiveEditor?.Paste();
     }
 
     #endregion

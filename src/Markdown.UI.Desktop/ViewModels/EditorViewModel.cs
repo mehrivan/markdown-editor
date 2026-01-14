@@ -44,6 +44,31 @@ public sealed partial class EditorViewModel : ViewModelBase
     public event EventHandler<string>? ContentChanged;
 
     /// <summary>
+    /// Raised when undo is requested.
+    /// </summary>
+    public event Action? UndoRequested;
+
+    /// <summary>
+    /// Raised when redo is requested.
+    /// </summary>
+    public event Action? RedoRequested;
+
+    /// <summary>
+    /// Raised when cut is requested.
+    /// </summary>
+    public event Action? CutRequested;
+
+    /// <summary>
+    /// Raised when copy is requested.
+    /// </summary>
+    public event Action? CopyRequested;
+
+    /// <summary>
+    /// Raised when paste is requested.
+    /// </summary>
+    public event Action? PasteRequested;
+
+    /// <summary>
     /// Called when the Content property changes.
     /// Fires the ContentChanged event unless content is being loaded.
     /// </summary>
@@ -85,5 +110,54 @@ public sealed partial class EditorViewModel : ViewModelBase
     {
         CaretLine = line;
         CaretColumn = column;
+    }
+
+    /// <summary>
+    /// Updates the content from the editor.
+    /// </summary>
+    /// <param name="content">The updated content.</param>
+    public void UpdateContent(string content)
+    {
+        Content = content;
+    }
+
+    /// <summary>
+    /// Requests undo operation on the editor.
+    /// </summary>
+    public void Undo()
+    {
+        UndoRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Requests redo operation on the editor.
+    /// </summary>
+    public void Redo()
+    {
+        RedoRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Requests cut operation on the editor.
+    /// </summary>
+    public void Cut()
+    {
+        CutRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Requests copy operation on the editor.
+    /// </summary>
+    public void Copy()
+    {
+        CopyRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Requests paste operation on the editor.
+    /// </summary>
+    public void Paste()
+    {
+        PasteRequested?.Invoke();
     }
 }

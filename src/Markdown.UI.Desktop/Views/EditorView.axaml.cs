@@ -47,6 +47,11 @@ public partial class EditorView : UserControl
         if (_viewModel is not null)
         {
             _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            _viewModel.UndoRequested -= OnUndoRequested;
+            _viewModel.RedoRequested -= OnRedoRequested;
+            _viewModel.CutRequested -= OnCutRequested;
+            _viewModel.CopyRequested -= OnCopyRequested;
+            _viewModel.PasteRequested -= OnPasteRequested;
         }
 
         _viewModel = DataContext as EditorViewModel;
@@ -55,6 +60,11 @@ public partial class EditorView : UserControl
         {
             // Subscribe to ViewModel changes
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            _viewModel.UndoRequested += OnUndoRequested;
+            _viewModel.RedoRequested += OnRedoRequested;
+            _viewModel.CutRequested += OnCutRequested;
+            _viewModel.CopyRequested += OnCopyRequested;
+            _viewModel.PasteRequested += OnPasteRequested;
 
             // Subscribe to editor events only once
             if (!_isEditorEventsSubscribed)
@@ -130,7 +140,7 @@ public partial class EditorView : UserControl
         }
 
         // Sync text from editor to ViewModel
-        _viewModel.Content = TextEditor.Document.Text;
+        _viewModel.UpdateContent(TextEditor.Document.Text);
     }
 
     private void OnCaretPositionChanged(object? sender, EventArgs e)
@@ -142,6 +152,37 @@ public partial class EditorView : UserControl
 
         var caret = TextEditor.TextArea.Caret;
         _viewModel.UpdateCaretPosition(caret.Line, caret.Column);
+    }
+
+    private void OnUndoRequested()
+    {
+        if (TextEditor.Document.UndoStack.CanUndo)
+        {
+            TextEditor.Document.UndoStack.Undo();
+        }
+    }
+
+    private void OnRedoRequested()
+    {
+        if (TextEditor.Document.UndoStack.CanRedo)
+        {
+            TextEditor.Document.UndoStack.Redo();
+        }
+    }
+
+    private void OnCutRequested()
+    {
+        TextEditor.Cut();
+    }
+
+    private void OnCopyRequested()
+    {
+        TextEditor.Copy();
+    }
+
+    private void OnPasteRequested()
+    {
+        TextEditor.Paste();
     }
 
     private void InitializeTextMate()

@@ -44,6 +44,24 @@ public interface IDialogService
     Task<bool> ShowConfirmationDialogAsync(Visual visual, string title, string message);
 
     /// <summary>
+    /// Shows a confirmation dialog with three buttons (Save/Don't Save/Cancel).
+    /// </summary>
+    /// <param name="visual">The visual to get the TopLevel from.</param>
+    /// <param name="title">The dialog title.</param>
+    /// <param name="message">The message to display.</param>
+    /// <param name="saveButton">The text for the save button (default: "Save").</param>
+    /// <param name="dontSaveButton">The text for the don't save button (default: "Don't Save").</param>
+    /// <param name="cancelButton">The text for the cancel button (default: "Cancel").</param>
+    /// <returns>True if user clicked Save, false if Don't Save, null if Cancel or dialog closed.</returns>
+    Task<bool?> ShowThreeButtonConfirmationAsync(
+        Visual visual,
+        string title,
+        string message,
+        string saveButton = "Save",
+        string dontSaveButton = "Don't Save",
+        string cancelButton = "Cancel");
+
+    /// <summary>
     /// Shows an error message dialog.
     /// </summary>
     /// <param name="visual">The visual to get the TopLevel from.</param>
