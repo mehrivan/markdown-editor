@@ -285,6 +285,7 @@ Start editing or open a file to begin!
         if (_previousActiveTab is not null)
         {
             _previousActiveTab.Editor.ContentChanged -= OnActiveEditorContentChanged;
+            _previousActiveTab.Editor.PropertyChanged -= OnActiveEditorPropertyChanged;
             _previousActiveTab.PropertyChanged -= OnActiveTabPropertyChanged;
         }
 
@@ -292,6 +293,7 @@ Start editing or open a file to begin!
         if (value is not null)
         {
             value.Editor.ContentChanged += OnActiveEditorContentChanged;
+            value.Editor.PropertyChanged += OnActiveEditorPropertyChanged;
             value.PropertyChanged += OnActiveTabPropertyChanged;
 
             // Update status bar
@@ -794,6 +796,25 @@ Start editing or open a file to begin!
         if (e.PropertyName == nameof(TabViewModel.IsModified) && ActiveTab is not null)
         {
             StatusBar.UpdateModifiedState(ActiveTab.IsModified);
+        }
+    }
+
+    private void OnActiveEditorPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (ActiveEditor is null)
+        {
+            return;
+        }
+
+        // Update status bar when caret position or total lines change
+        if (e.PropertyName == nameof(EditorViewModel.CaretLine) ||
+            e.PropertyName == nameof(EditorViewModel.CaretColumn) ||
+            e.PropertyName == nameof(EditorViewModel.TotalLines))
+        {
+            StatusBar.UpdateFromEditor(
+                ActiveEditor.CaretLine,
+                ActiveEditor.CaretColumn,
+                ActiveEditor.TotalLines);
         }
     }
 

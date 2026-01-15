@@ -50,7 +50,7 @@
 
         <!-- No workspace message -->
         <Border Grid.Row="1"
-                IsVisible="{Binding !WorkspacePath}"
+                IsVisible="{Binding !HasWorkspace}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Padding="20">
@@ -74,7 +74,7 @@
                   ItemsSource="{Binding RootNodes}"
                   SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
                   Background="Transparent"
-                  IsVisible="{Binding WorkspacePath, Converter={x:Static ObjectConverters.IsNotNull}}">
+                  IsVisible="{Binding HasWorkspace}">
             <TreeView.ItemTemplate>
                 <TreeDataTemplate ItemsSource="{Binding Children}"
                                   DataType="models:FileTreeNode">

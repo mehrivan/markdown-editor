@@ -23,6 +23,11 @@ public sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
     private string? _workspacePath;
 
     /// <summary>
+    /// Indicates whether a workspace is currently loaded.
+    /// </summary>
+    public bool HasWorkspace => !string.IsNullOrEmpty(WorkspacePath);
+
+    /// <summary>
     /// The root nodes of the file tree.
     /// </summary>
     [ObservableProperty]
@@ -117,7 +122,13 @@ public sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
                 maxDepth: 1,
                 cancellationToken);
 
-            foreach (var entry in entries.OrderBy(e => e.Type).ThenBy(e => e.Name))
+            // Filter to show only folders and markdown files
+            var filteredEntries = entries
+                .Where(e => e.Type == FileEntryType.Folder || e.IsMarkdownFile)
+                .OrderBy(e => e.Type)
+                .ThenBy(e => e.Name);
+
+            foreach (var entry in filteredEntries)
             {
                 var node = FileTreeNode.FromWorkspaceEntry(entry);
 
@@ -167,7 +178,13 @@ public sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
                 folder.FullPath,
                 maxDepth: 1);
 
-            foreach (var entry in entries.OrderBy(e => e.Type).ThenBy(e => e.Name))
+            // Filter to show only folders and markdown files
+            var filteredEntries = entries
+                .Where(e => e.Type == FileEntryType.Folder || e.IsMarkdownFile)
+                .OrderBy(e => e.Type)
+                .ThenBy(e => e.Name);
+
+            foreach (var entry in filteredEntries)
             {
                 var node = FileTreeNode.FromWorkspaceEntry(entry);
 
@@ -253,6 +270,12 @@ public sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
     /// </summary>
     private void HandleFileCreated(string path, bool isDirectory)
     {
+        // Only show folders and markdown files
+        if (!isDirectory && !IsMarkdownFile(path))
+        {
+            return;
+        }
+
         var parentPath = Path.GetDirectoryName(path);
         if (parentPath is null)
         {
@@ -469,6 +492,26 @@ public sealed partial class FileExplorerViewModel : ViewModelBase, IDisposable
         }
 
         return currentNode;
+    }
+
+    /// <summary>
+    /// Checks if a file path represents a markdown file.
+    /// </summary>
+    /// <param name="path">The file path to check.</param>
+    /// <returns>True if the file has a .md or .markdown extension.</returns>
+    private static bool IsMarkdownFile(string path)
+    {
+        var extension = Path.GetExtension(path);
+        return extension.Equals(".md", StringComparison.OrdinalIgnoreCase) ||
+               extension.Equals(".markdown", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Called when the workspace path changes.
+    /// </summary>
+    partial void OnWorkspacePathChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasWorkspace));
     }
 
     /// <summary>
