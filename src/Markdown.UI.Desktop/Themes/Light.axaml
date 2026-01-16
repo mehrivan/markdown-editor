@@ -10,6 +10,8 @@
     <Color x:Key="EditorBackgroundColor">#FFFFFF</Color>
     <Color x:Key="StatusBarBackgroundColor">#007ACC</Color>
     <Color x:Key="ActivityBarBackgroundColor">#E8E8E8</Color>
+    <Color x:Key="TitleBarBackgroundColor">#DDDDDD</Color>
+    <Color x:Key="TitleBarForegroundColor">#333333</Color>
 
     <!-- Text Colors -->
     <Color x:Key="TextColor">#1E1E1E</Color>
@@ -41,6 +43,8 @@
     <SolidColorBrush x:Key="EditorBackgroundBrush" Color="{StaticResource EditorBackgroundColor}" />
     <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="{StaticResource StatusBarBackgroundColor}" />
     <SolidColorBrush x:Key="ActivityBarBackgroundBrush" Color="{StaticResource ActivityBarBackgroundColor}" />
+    <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="{StaticResource TitleBarBackgroundColor}" />
+    <SolidColorBrush x:Key="TitleBarForegroundBrush" Color="{StaticResource TitleBarForegroundColor}" />
 
     <!-- Text Brushes -->
     <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />

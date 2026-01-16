@@ -8,6 +8,9 @@
         Title="Markdown Editor"
         MinWidth="800"
         MinHeight="600"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="PreferSystemChrome"
+        ExtendClientAreaTitleBarHeightHint="30"
         Background="{DynamicResource BackgroundBrush}">
 
     <Window.Resources>
@@ -30,6 +33,18 @@
         <Style Selector="Button.activity-btn.active">
             <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
         </Style>
+        <!-- Title bar menu styles -->
+        <Style Selector="Menu">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Menu > MenuItem">
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource TitleBarForegroundBrush}" />
+        </Style>
+        <Style Selector="Menu > MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource TreeViewItemHoverBrush}" />
+        </Style>
     </Window.Styles>
 
     <Window.KeyBindings>
@@ -45,53 +60,104 @@
     </Window.KeyBindings>
 
     <DockPanel>
-        <!-- Menu Bar (Top) -->
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_New File"
-                          Command="{Binding NewFileCommand}"
-                          InputGesture="Ctrl+N" />
-                <Separator />
-                <MenuItem Header="_Open File..."
-                          Command="{Binding OpenFileCommand}"
-                          InputGesture="Ctrl+O" />
-                <MenuItem Header="Open _Folder..."
-                          Command="{Binding OpenFolderCommand}" />
-                <Separator />
-                <MenuItem Header="_Save"
-                          Command="{Binding SaveCommand}"
-                          InputGesture="Ctrl+S" />
-                <MenuItem Header="Save _As..."
-                          Command="{Binding SaveAsCommand}"
-                          InputGesture="Ctrl+Shift+S" />
-                <MenuItem Header="Save A_ll"
-                          Command="{Binding SaveAllCommand}"
-                          InputGesture="Ctrl+Shift+Alt+S" />
-                <Separator />
-                <MenuItem Header="E_xit"
-                          Command="{Binding ExitCommand}"
-                          InputGesture="Alt+F4" />
-            </MenuItem>
+        <!-- Custom Title Bar -->
+        <Panel DockPanel.Dock="Top">
+            <!-- Background layer (fills entire area including off-screen portion) -->
+            <Border Background="{DynamicResource TitleBarBackgroundBrush}"
+                    IsHitTestVisible="False" />
 
-            <MenuItem Header="_Edit">
-                <MenuItem Header="_Undo"
-                          Command="{Binding UndoCommand}"
-                          InputGesture="Ctrl+Z" />
-                <MenuItem Header="_Redo"
-                          Command="{Binding RedoCommand}"
-                          InputGesture="Ctrl+Y" />
-                <Separator />
-                <MenuItem Header="Cu_t"
-                          Command="{Binding CutCommand}"
-                          InputGesture="Ctrl+X" />
-                <MenuItem Header="_Copy"
-                          Command="{Binding CopyCommand}"
-                          InputGesture="Ctrl+C" />
-                <MenuItem Header="_Paste"
-                          Command="{Binding PasteCommand}"
-                          InputGesture="Ctrl+V" />
-            </MenuItem>
-        </Menu>
+            <!-- Content layer with offset -->
+            <Grid RowDefinitions="Auto,Auto">
+                <!-- Spacer for off-screen area when maximized -->
+                <Border Grid.Row="0"
+                        Height="{Binding $parent[Window].OffScreenMargin.Top}"
+                        IsHitTestVisible="False" />
+
+                <!-- Actual title bar content -->
+                <Grid Grid.Row="1"
+                      ColumnDefinitions="Auto,Auto,*,Auto"
+                      Height="30"
+                      IsHitTestVisible="False">
+                    <!-- App Icon -->
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                IsHitTestVisible="False">
+                        <PathIcon Width="16"
+                                  Height="16"
+                                  Foreground="{DynamicResource TitleBarForegroundBrush}"
+                                  Data="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z" />
+                    </StackPanel>
+
+                    <!-- Menu Bar -->
+                    <Menu Grid.Column="1"
+                          Margin="4,0,0,0"
+                          VerticalAlignment="Center"
+                          IsHitTestVisible="True">
+                        <MenuItem Header="_File">
+                            <MenuItem Header="_New File"
+                                      Command="{Binding NewFileCommand}"
+                                      InputGesture="Ctrl+N" />
+                            <Separator />
+                            <MenuItem Header="_Open File..."
+                                      Command="{Binding OpenFileCommand}"
+                                      InputGesture="Ctrl+O" />
+                            <MenuItem Header="Open _Folder..."
+                                      Command="{Binding OpenFolderCommand}" />
+                            <Separator />
+                            <MenuItem Header="_Save"
+                                      Command="{Binding SaveCommand}"
+                                      InputGesture="Ctrl+S" />
+                            <MenuItem Header="Save _As..."
+                                      Command="{Binding SaveAsCommand}"
+                                      InputGesture="Ctrl+Shift+S" />
+                            <MenuItem Header="Save A_ll"
+                                      Command="{Binding SaveAllCommand}"
+                                      InputGesture="Ctrl+Shift+Alt+S" />
+                            <Separator />
+                            <MenuItem Header="E_xit"
+                                      Command="{Binding ExitCommand}"
+                                      InputGesture="Alt+F4" />
+                        </MenuItem>
+
+                        <MenuItem Header="_Edit">
+                            <MenuItem Header="_Undo"
+                                      Command="{Binding UndoCommand}"
+                                      InputGesture="Ctrl+Z" />
+                            <MenuItem Header="_Redo"
+                                      Command="{Binding RedoCommand}"
+                                      InputGesture="Ctrl+Y" />
+                            <Separator />
+                            <MenuItem Header="Cu_t"
+                                      Command="{Binding CutCommand}"
+                                      InputGesture="Ctrl+X" />
+                            <MenuItem Header="_Copy"
+                                      Command="{Binding CopyCommand}"
+                                      InputGesture="Ctrl+C" />
+                            <MenuItem Header="_Paste"
+                                      Command="{Binding PasteCommand}"
+                                      InputGesture="Ctrl+V" />
+                        </MenuItem>
+                    </Menu>
+
+                    <!-- Window Title (centered) -->
+                    <TextBlock Grid.Column="2"
+                               x:CompileBindings="False"
+                               Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                               Foreground="{DynamicResource TitleBarForegroundBrush}"
+                               FontSize="12"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               IsHitTestVisible="False" />
+
+                    <!-- Spacer for system chrome buttons -->
+                    <Border Grid.Column="3"
+                            Width="138"
+                            IsHitTestVisible="False" />
+                </Grid>
+            </Grid>
+        </Panel>
 
         <!-- Status Bar (Bottom) -->
         <views:StatusBarView DockPanel.Dock="Bottom"

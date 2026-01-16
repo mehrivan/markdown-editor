@@ -35,7 +35,7 @@ public sealed class WorkspaceExplorer : IWorkspaceExplorer
 
         void Traverse(DirectoryInfo dir, int depth)
         {
-            if (depth > maxDepth || cancellationToken.IsCancellationRequested)
+            if (depth >= maxDepth || cancellationToken.IsCancellationRequested)
             {
                 return;
             }

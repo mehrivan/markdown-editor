@@ -8,18 +8,98 @@
 
     <UserControl.Resources>
         <converters:FileTypeToIconConverter x:Key="FileTypeToIconConverter" />
+        <converters:TreeIndentConverter x:Key="TreeIndentConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <!-- TreeView item hover and selection styles -->
+        <!-- Custom TreeViewItem Template -->
         <Style Selector="TreeViewItem">
             <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <StackPanel>
+                        <Border Name="PART_LayoutRoot"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                CornerRadius="0"
+                                MinHeight="22"
+                                Padding="{TemplateBinding Level, Converter={StaticResource TreeIndentConverter}}">
+                            <Grid ColumnDefinitions="Auto,Auto,*">
+
+                                <!-- Chevron Button -->
+                                <ToggleButton Name="PART_ExpanderButton"
+                                              Grid.Column="0"
+                                              Width="16"
+                                              Height="16"
+                                              Margin="2,0,0,0"
+                                              Focusable="False"
+                                              IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
+                                              ClickMode="Press">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate>
+                                            <ContentPresenter Content="{TemplateBinding Content}"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center" />
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                    <Grid Width="16" Height="16">
+                                        <!-- Collapsed chevron (right arrow) - visible when NOT checked -->
+                                        <Path Name="ChevronRight"
+                                              Width="8"
+                                              Height="8"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Data="M 0 0 L 4 4 L 0 8"
+                                              Stroke="{DynamicResource SecondaryTextBrush}"
+                                              StrokeThickness="1.5"
+                                              StrokeLineCap="Round"
+                                              IsVisible="{Binding !IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" />
+                                        <!-- Expanded chevron (down arrow) - visible when checked -->
+                                        <Path Name="ChevronDown"
+                                              Width="8"
+                                              Height="8"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Data="M 0 2 L 4 6 L 8 2"
+                                              Stroke="{DynamicResource SecondaryTextBrush}"
+                                              StrokeThickness="1.5"
+                                              StrokeLineCap="Round"
+                                              IsVisible="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" />
+                                    </Grid>
+                                </ToggleButton>
+
+                                <!-- Content Presenter -->
+                                <ContentPresenter Name="PART_HeaderPresenter"
+                                                  Grid.Column="1"
+                                                  Margin="0,0,0,0"
+                                                  Content="{TemplateBinding Header}"
+                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        IsVisible="{TemplateBinding IsExpanded}"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter>
         </Style>
-        <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="{DynamicResource TreeViewItemSelectedBrush}" />
+
+        <!-- Hide chevron for leaf items (no children) -->
+        <Style Selector="TreeViewItem:empty /template/ ToggleButton#PART_ExpanderButton">
+            <Setter Property="Opacity" Value="0" />
         </Style>
+
+        <!-- Hover effect -->
         <Style Selector="TreeViewItem:pointerover /template/ Border#PART_LayoutRoot">
             <Setter Property="Background" Value="{DynamicResource TreeViewItemHoverBrush}" />
+        </Style>
+
+        <!-- Selection effect -->
+        <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource TreeViewItemSelectedBrush}" />
         </Style>
     </UserControl.Styles>
 
@@ -79,13 +159,12 @@
                 <TreeDataTemplate ItemsSource="{Binding Children}"
                                   DataType="models:FileTreeNode">
                     <Grid ColumnDefinitions="Auto,*"
-                          Height="22"
-                          Margin="0,1">
+                          Height="22">
                         <!-- File/Folder Icon -->
                         <Image Grid.Column="0"
                                Width="16"
                                Height="16"
-                               Margin="4,0,6,0"
+                               Margin="0,0,4,0"
                                Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" />
 
                         <!-- Name -->
