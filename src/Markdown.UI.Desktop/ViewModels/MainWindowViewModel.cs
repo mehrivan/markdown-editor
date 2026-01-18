@@ -106,6 +106,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _autoSaveService.SaveCompleted += OnAutoSaveCompleted;
         _autoSaveService.SaveFailed += OnAutoSaveFailed;
 
+        // Wire up status bar auto-save toggle
+        StatusBar.AutoSaveToggleRequested += OnAutoSaveToggleRequested;
+
         // Initialize settings
         var settings = _settingsService.Load();
         IsSidebarVisible = settings.IsSidebarVisible;
@@ -826,6 +829,16 @@ Start editing or open a file to begin!
 
         // Show non-intrusive success feedback in status bar
         StatusBar.ShowFeedback("Auto-saved");
+    }
+
+    private void OnAutoSaveToggleRequested(object? sender, EventArgs e)
+    {
+        var settings = _settingsService.Load();
+        settings.AutoSaveEnabled = !settings.AutoSaveEnabled;
+        _ = _settingsService.SaveAsync(settings);
+
+        _autoSaveService.IsEnabled = settings.AutoSaveEnabled;
+        StatusBar.UpdateAutoSaveStatus(settings.AutoSaveEnabled);
     }
 
     private void OnAutoSaveFailed(object? sender, AutoSaveFailedEventArgs e)

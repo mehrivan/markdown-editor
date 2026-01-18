@@ -25,13 +25,34 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Width" Value="48" />
             <Setter Property="Height" Value="48" />
-            <Setter Property="Padding" Value="12" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.activity-btn /template/ ContentPresenter">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.activity-btn PathIcon">
+            <Setter Property="Foreground" Value="{DynamicResource ActivityBarIconInactiveBrush}" />
+            <Setter Property="Margin" Value="4,0,0,0" />
         </Style>
         <Style Selector="Button.activity-btn:pointerover">
-            <Setter Property="Background" Value="{DynamicResource TreeViewItemHoverBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.activity-btn:pointerover PathIcon">
+            <Setter Property="Foreground" Value="{DynamicResource ActivityBarIconActiveBrush}" />
         </Style>
         <Style Selector="Button.activity-btn.active">
-            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderThickness" Value="2,0,0,0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="Button.activity-btn.active PathIcon">
+            <Setter Property="Foreground" Value="{DynamicResource ActivityBarIconActiveBrush}" />
         </Style>
         <!-- Title bar menu styles -->
         <Style Selector="Menu">
@@ -76,25 +97,23 @@
                 <!-- Actual title bar content -->
                 <Grid Grid.Row="1"
                       ColumnDefinitions="Auto,Auto,*,Auto"
-                      Height="30"
-                      IsHitTestVisible="False">
+                      Height="30">
                     <!-- App Icon -->
                     <StackPanel Grid.Column="0"
                                 Orientation="Horizontal"
-                                Margin="8,0,0,0"
+                                Margin="16,0,0,0"
                                 VerticalAlignment="Center"
                                 IsHitTestVisible="False">
                         <PathIcon Width="16"
                                   Height="16"
                                   Foreground="{DynamicResource TitleBarForegroundBrush}"
-                                  Data="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z" />
+                                  Data="M9 3.5V11.5C9 11.776 8.776 12 8.5 12C8.224 12 8 11.776 8 11.5V4.831L5.376 7.83C5.187 8.048 4.814 8.048 4.624 7.83L2 4.831V11.5C2 11.776 1.776 12 1.5 12C1.224 12 1 11.776 1 11.5V3.5C1 3.292 1.129 3.105 1.324 3.032C1.521 2.96 1.74 3.014 1.876 3.171L5 6.741L8.124 3.171C8.261 3.014 8.478 2.959 8.676 3.032C8.871 3.105 9 3.292 9 3.5ZM14.854 9.146C14.659 8.951 14.342 8.951 14.147 9.146L13.001 10.292V3.5C13.001 3.224 12.777 3 12.501 3C12.225 3 12.001 3.224 12.001 3.5V10.293L10.855 9.147C10.66 8.952 10.343 8.952 10.148 9.147C9.953 9.342 9.953 9.659 10.148 9.854L12.148 11.854C12.246 11.952 12.757 11.952 12.855 11.854L14.855 9.854C15.05 9.659 15.05 9.342 14.855 9.147L14.854 9.146Z" />
                     </StackPanel>
 
                     <!-- Menu Bar -->
                     <Menu Grid.Column="1"
                           Margin="4,0,0,0"
-                          VerticalAlignment="Center"
-                          IsHitTestVisible="True">
+                          VerticalAlignment="Center">
                         <MenuItem Header="_File">
                             <MenuItem Header="_New File"
                                       Command="{Binding NewFileCommand}"
@@ -159,6 +178,11 @@
             </Grid>
         </Panel>
 
+        <!-- Bottom spacer for off-screen area when maximized -->
+        <Border DockPanel.Dock="Bottom"
+                Height="{Binding $parent[Window].OffScreenMargin.Bottom}"
+                IsHitTestVisible="False" />
+
         <!-- Status Bar (Bottom) -->
         <views:StatusBarView DockPanel.Dock="Bottom"
                              DataContext="{Binding StatusBar}" />
@@ -170,18 +194,36 @@
             <Border Grid.Column="0"
                     Width="48"
                     Background="{DynamicResource ActivityBarBackgroundBrush}">
-                <StackPanel VerticalAlignment="Top">
-                    <!-- Explorer Toggle Button -->
-                    <Button Classes="activity-btn"
-                            Classes.active="{Binding IsSidebarVisible}"
-                            Command="{Binding ToggleSidebarCommand}"
-                            ToolTip.Tip="Toggle Explorer (Ctrl+B)">
-                        <PathIcon Width="24"
-                                  Height="24"
-                                  Foreground="{DynamicResource ForegroundBrush}"
-                                  Data="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8" />
-                    </Button>
-                </StackPanel>
+                <DockPanel>
+                    <!-- Top buttons -->
+                    <StackPanel DockPanel.Dock="Top">
+                        <!-- Explorer Toggle Button -->
+                        <Button Classes="activity-btn"
+                                Classes.active="{Binding IsSidebarVisible}"
+                                Command="{Binding ToggleSidebarCommand}"
+                                ToolTip.Tip="Toggle Explorer (Ctrl+B)">
+                            <PathIcon Width="24"
+                                      Height="24"
+                                      Data="M7.5 22.5H17.595C17.07 23.4 16.11 24 15 24H7.5C4.185 24 1.5 21.315 1.5 18V6C1.5 4.89 2.1 3.93 3 3.405V18C3 20.475 5.025 22.5 7.5 22.5ZM21 8.121V18C21 19.6545 19.6545 21 18 21H7.5C5.8455 21 4.5 19.6545 4.5 18V3C4.5 1.3455 5.8455 0 7.5 0H12.879C13.4715 0 14.0505 0.24 14.4705 0.6585L20.3415 6.5295C20.766 6.954 21 7.5195 21 8.121ZM13.5 6.75C13.5 7.164 13.8375 7.5 14.25 7.5H19.1895L13.5 1.8105V6.75ZM19.5 18V9H14.25C13.0095 9 12 7.9905 12 6.75V1.5H7.5C6.672 1.5 6 2.1735 6 3V18C6 18.8265 6.672 19.5 7.5 19.5H18C18.828 19.5 19.5 18.8265 19.5 18Z" />
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Bottom buttons -->
+                    <StackPanel DockPanel.Dock="Bottom"
+                                VerticalAlignment="Bottom">
+                        <!-- Toggle Theme Button -->
+                        <Button Classes="activity-btn"
+                                Command="{Binding ToggleThemeCommand}"
+                                ToolTip.Tip="Toggle Color Theme">
+                            <PathIcon Width="24"
+                                      Height="24"
+                                      Data="M8 1.00195C6.61553 1.00195 5.26216 1.4125 4.11101 2.18167C2.95987 2.95084 2.06266 4.04409 1.53285 5.32317C1.00303 6.60225 0.86441 8.00972 1.13451 9.36759C1.4046 10.7255 2.07129 11.9727 3.05026 12.9517C4.02922 13.9307 5.27651 14.5974 6.63437 14.8675C7.99224 15.1375 9.3997 14.9989 10.6788 14.4691C11.9579 13.9393 13.0511 13.0421 13.8203 11.8909C14.5895 10.7398 15 9.38642 15 8.00195C15 6.14544 14.2625 4.36496 12.9498 3.05221C11.637 1.73945 9.85652 1.00195 8 1.00195ZM8 14.002V2.00195C9.5913 2.00195 11.1174 2.63409 12.2426 3.75931C13.3679 4.88453 14 6.41065 14 8.00195C14 9.59325 13.3679 11.1194 12.2426 12.2446C11.1174 13.3698 9.5913 14.002 8 14.002Z" />
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Spacer -->
+                    <Border />
+                </DockPanel>
             </Border>
 
             <!-- Primary Sidebar (File Explorer) -->

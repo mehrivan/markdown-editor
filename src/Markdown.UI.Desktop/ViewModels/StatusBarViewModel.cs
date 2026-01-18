@@ -95,6 +95,20 @@ public sealed partial class StatusBarViewModel : ViewModelBase, IDisposable
     public string AutoSaveStatus => IsAutoSaveEnabled ? "Auto-save: On" : "Auto-save: Off";
 
     /// <summary>
+    /// Raised when the user requests to toggle auto-save from the status bar.
+    /// </summary>
+    public event EventHandler? AutoSaveToggleRequested;
+
+    /// <summary>
+    /// Command to toggle auto-save on/off from the status bar.
+    /// </summary>
+    [RelayCommand]
+    private void ToggleAutoSave()
+    {
+        AutoSaveToggleRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
     /// Updates the cursor position and line count from the active editor.
     /// </summary>
     /// <param name="line">Current line number (1-based).</param>

@@ -18,6 +18,8 @@
     <Color x:Key="SecondaryTextColor">#858585</Color>
     <Color x:Key="StatusBarTextColor">#FFFFFF</Color>
     <Color x:Key="ActivityBarForegroundColor">#FFFFFF</Color>
+    <Color x:Key="ActivityBarIconInactiveColor">#858585</Color>
+    <Color x:Key="ActivityBarIconActiveColor">#FFFFFF</Color>
 
     <!-- Accent Colors -->
     <Color x:Key="AccentColor">#007ACC</Color>
@@ -51,6 +53,8 @@
     <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}" />
     <SolidColorBrush x:Key="StatusBarTextBrush" Color="{StaticResource StatusBarTextColor}" />
     <SolidColorBrush x:Key="ActivityBarForegroundBrush" Color="{StaticResource ActivityBarForegroundColor}" />
+    <SolidColorBrush x:Key="ActivityBarIconInactiveBrush" Color="{StaticResource ActivityBarIconInactiveColor}" />
+    <SolidColorBrush x:Key="ActivityBarIconActiveBrush" Color="{StaticResource ActivityBarIconActiveColor}" />
 
     <!-- Accent Brushes -->
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />

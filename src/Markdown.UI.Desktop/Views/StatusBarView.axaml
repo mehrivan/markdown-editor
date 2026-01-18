@@ -4,69 +4,31 @@
              x:Class="Markdown.UI.Desktop.Views.StatusBarView"
              x:DataType="vm:StatusBarViewModel">
 
+    <UserControl.Styles>
+        <Style Selector="Button.statusbar-btn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+        </Style>
+        <Style Selector="Button.statusbar-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#20FFFFFF" />
+        </Style>
+        <Style Selector="Button.statusbar-btn /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </UserControl.Styles>
+
     <Border Background="{DynamicResource StatusBarBackgroundBrush}"
             Height="22">
-        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto">
-            <!-- Cursor Position: Ln X, Col Y -->
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <!-- Left-aligned items -->
             <StackPanel Grid.Column="0"
                         Orientation="Horizontal"
-                        Margin="12,0,12,0"
-                        VerticalAlignment="Center">
-                <TextBlock Text="Ln "
-                           Foreground="{DynamicResource StatusBarTextBrush}"
-                           FontSize="12" />
-                <TextBlock Text="{Binding Line}"
-                           Foreground="{DynamicResource StatusBarTextBrush}"
-                           FontSize="12" />
-                <TextBlock Text=", Col "
-                           Foreground="{DynamicResource StatusBarTextBrush}"
-                           FontSize="12" />
-                <TextBlock Text="{Binding Column}"
-                           Foreground="{DynamicResource StatusBarTextBrush}"
-                           FontSize="12" />
-            </StackPanel>
-
-            <!-- Separator -->
-            <Border Grid.Column="1"
-                    Width="1"
-                    Background="{DynamicResource StatusBarTextBrush}"
-                    Opacity="0.3"
-                    Margin="0,4" />
-
-            <!-- Total Lines -->
-            <StackPanel Grid.Column="2"
-                        Orientation="Horizontal"
-                        Margin="12,0,12,0"
-                        VerticalAlignment="Center">
-                <TextBlock Text="{Binding TotalLines}"
-                           Foreground="{DynamicResource StatusBarTextBrush}"
-                           FontSize="12" />
-                <TextBlock Text=" lines"
-                           Foreground="{DynamicResource StatusBarTextBrush}"
-                           FontSize="12" />
-            </StackPanel>
-
-            <!-- Separator -->
-            <Border Grid.Column="3"
-                    Width="1"
-                    Background="{DynamicResource StatusBarTextBrush}"
-                    Opacity="0.3"
-                    Margin="0,4" />
-
-            <!-- Encoding -->
-            <TextBlock Grid.Column="4"
-                       Text="{Binding Encoding}"
-                       Foreground="{DynamicResource StatusBarTextBrush}"
-                       FontSize="12"
-                       Margin="12,0,0,0"
-                       VerticalAlignment="Center" />
-
-            <!-- Right-aligned items: Loading, Feedback, Auto-save status, and Modified indicator -->
-            <StackPanel Grid.Column="5"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        Margin="0,0,12,0">
+                        Margin="12,0,0,0">
 
                 <!-- Loading Indicator -->
                 <StackPanel Orientation="Horizontal"
@@ -120,25 +82,86 @@
                         Margin="0,4,12,4"
                         IsVisible="{Binding HasFeedback}" />
 
-                <!-- Auto-save Status -->
-                <TextBlock Text="{Binding AutoSaveStatus}"
-                           Foreground="{DynamicResource StatusBarTextBrush}"
-                           FontSize="12"
-                           Margin="0,0,12,0" />
-
-                <!-- Separator before modified indicator -->
-                <Border Width="1"
-                        Background="{DynamicResource StatusBarTextBrush}"
-                        Opacity="0.3"
-                        Margin="0,4,12,4"
-                        IsVisible="{Binding IsModified}" />
-
                 <!-- Modified Indicator -->
                 <TextBlock Text="Modified"
                            Foreground="{DynamicResource StatusBarTextBrush}"
                            FontSize="12"
                            FontWeight="SemiBold"
                            IsVisible="{Binding IsModified}" />
+            </StackPanel>
+
+            <!-- Right-aligned items: Ln/Col | Lines | UTF-8 | Auto-Save -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Margin="0,0,12,0">
+
+                <!-- Cursor Position: Ln X, Col Y -->
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="0,0,12,0">
+                    <TextBlock Text="Ln "
+                               Foreground="{DynamicResource StatusBarTextBrush}"
+                               FontSize="12" />
+                    <TextBlock Text="{Binding Line}"
+                               Foreground="{DynamicResource StatusBarTextBrush}"
+                               FontSize="12" />
+                    <TextBlock Text=", Col "
+                               Foreground="{DynamicResource StatusBarTextBrush}"
+                               FontSize="12" />
+                    <TextBlock Text="{Binding Column}"
+                               Foreground="{DynamicResource StatusBarTextBrush}"
+                               FontSize="12" />
+                </StackPanel>
+
+                <!-- Separator -->
+                <Border Width="1"
+                        Background="{DynamicResource StatusBarTextBrush}"
+                        Opacity="0.3"
+                        Margin="0,4,12,4" />
+
+                <!-- Total Lines -->
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="0,0,12,0">
+                    <TextBlock Text="{Binding TotalLines}"
+                               Foreground="{DynamicResource StatusBarTextBrush}"
+                               FontSize="12" />
+                    <TextBlock Text=" lines"
+                               Foreground="{DynamicResource StatusBarTextBrush}"
+                               FontSize="12" />
+                </StackPanel>
+
+                <!-- Separator -->
+                <Border Width="1"
+                        Background="{DynamicResource StatusBarTextBrush}"
+                        Opacity="0.3"
+                        Margin="0,4,12,4" />
+
+                <!-- Encoding -->
+                <TextBlock Text="{Binding Encoding}"
+                           Foreground="{DynamicResource StatusBarTextBrush}"
+                           FontSize="12"
+                           Margin="0,0,12,0"
+                           VerticalAlignment="Center" />
+
+                <!-- Separator -->
+                <Border Width="1"
+                        Background="{DynamicResource StatusBarTextBrush}"
+                        Opacity="0.3"
+                        Margin="0,4,12,4" />
+
+                <!-- Auto-save Status (clickable) -->
+                <Button Classes="statusbar-btn"
+                        Command="{Binding ToggleAutoSaveCommand}"
+                        Cursor="Hand"
+                        VerticalAlignment="Center"
+                        Padding="4,2">
+                    <TextBlock Text="{Binding AutoSaveStatus}"
+                               Foreground="{DynamicResource StatusBarTextBrush}"
+                               FontSize="12" />
+                </Button>
             </StackPanel>
         </Grid>
     </Border>
