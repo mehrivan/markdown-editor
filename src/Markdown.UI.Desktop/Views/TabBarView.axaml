@@ -22,6 +22,8 @@
     </UserControl.Styles>
 
     <Border Background="{DynamicResource TabBorderBrush}"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource PanelBorderBrush}"
             Height="35">
         <ScrollViewer HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Disabled">

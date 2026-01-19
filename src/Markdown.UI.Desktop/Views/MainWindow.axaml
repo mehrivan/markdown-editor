@@ -85,6 +85,8 @@
         <Panel DockPanel.Dock="Top">
             <!-- Background layer (fills entire area including off-screen portion) -->
             <Border Background="{DynamicResource TitleBarBackgroundBrush}"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource PanelBorderBrush}"
                     IsHitTestVisible="False" />
 
             <!-- Content layer with offset -->
@@ -193,7 +195,9 @@
             <!-- Activity Bar (Left) -->
             <Border Grid.Column="0"
                     Width="48"
-                    Background="{DynamicResource ActivityBarBackgroundBrush}">
+                    Background="{DynamicResource ActivityBarBackgroundBrush}"
+                    BorderThickness="0,0,1,0"
+                    BorderBrush="{DynamicResource PanelBorderBrush}">
                 <DockPanel>
                     <!-- Top buttons -->
                     <StackPanel DockPanel.Dock="Top">
@@ -232,18 +236,24 @@
                   IsVisible="{Binding IsSidebarVisible}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="250" MinWidth="150" MaxWidth="500" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="5" />
                 </Grid.ColumnDefinitions>
 
                 <!-- File Explorer -->
                 <views:FileExplorerView Grid.Column="0"
                                         DataContext="{Binding FileExplorer}" />
 
-                <!-- Resize Splitter -->
+                <!-- Resize splitter: 5px transparent hit area + 1px visual line -->
                 <GridSplitter Grid.Column="1"
-                              Width="4"
-                              Background="{DynamicResource SplitterBrush}"
-                              ResizeDirection="Columns" />
+                              Width="5"
+                              Background="Transparent"
+                              ResizeDirection="Columns"
+                              Cursor="SizeWestEast" />
+                <Rectangle Grid.Column="1"
+                           Width="1"
+                           HorizontalAlignment="Left"
+                           Fill="{DynamicResource SplitterBrush}"
+                           IsHitTestVisible="False" />
             </Grid>
 
             <!-- Main Editor Area -->
@@ -307,7 +317,7 @@
                                 <StackPanel Orientation="Horizontal"
                                             HorizontalAlignment="Center"
                                             Spacing="8">
-                                    <TextBlock Text="Ctrl+K O"
+                                    <TextBlock Text="Ctrl+K, O"
                                                FontSize="13"
                                                FontFamily="Cascadia Code, Consolas, monospace"
                                                Foreground="{DynamicResource AccentBrush}" />

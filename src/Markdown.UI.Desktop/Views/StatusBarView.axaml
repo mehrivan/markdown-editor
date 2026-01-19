@@ -22,6 +22,8 @@
     </UserControl.Styles>
 
     <Border Background="{DynamicResource StatusBarBackgroundBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource PanelBorderBrush}"
             Height="22">
         <Grid ColumnDefinitions="Auto,*,Auto">
             <!-- Left-aligned items -->

@@ -8,7 +8,7 @@
     <Color x:Key="BackgroundColor">#FFFFFF</Color>
     <Color x:Key="SidebarBackgroundColor">#F3F3F3</Color>
     <Color x:Key="EditorBackgroundColor">#FFFFFF</Color>
-    <Color x:Key="StatusBarBackgroundColor">#007ACC</Color>
+    <Color x:Key="StatusBarBackgroundColor">#F8F8F8</Color>
     <Color x:Key="ActivityBarBackgroundColor">#E8E8E8</Color>
     <Color x:Key="TitleBarBackgroundColor">#DDDDDD</Color>
     <Color x:Key="TitleBarForegroundColor">#333333</Color>
@@ -16,7 +16,7 @@
     <!-- Text Colors -->
     <Color x:Key="TextColor">#1E1E1E</Color>
     <Color x:Key="SecondaryTextColor">#6E6E6E</Color>
-    <Color x:Key="StatusBarTextColor">#FFFFFF</Color>
+    <Color x:Key="StatusBarTextColor">#333333</Color>
     <Color x:Key="ActivityBarForegroundColor">#424242</Color>
     <Color x:Key="ActivityBarIconInactiveColor">#888888</Color>
     <Color x:Key="ActivityBarIconActiveColor">#333333</Color>
@@ -37,7 +37,8 @@
 
     <!-- Border Colors -->
     <Color x:Key="BorderColor">#E5E5E5</Color>
-    <Color x:Key="SplitterColor">#E7E7E7</Color>
+    <Color x:Key="PanelBorderColor">#C0C0C0</Color>
+    <Color x:Key="SplitterColor">#C8C8C8</Color>
 
     <!-- Background Brushes -->
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
@@ -72,6 +73,7 @@
 
     <!-- Border Brushes -->
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="PanelBorderBrush" Color="{StaticResource PanelBorderColor}" />
     <SolidColorBrush x:Key="SplitterBrush" Color="{StaticResource SplitterColor}" />
 
 </ResourceDictionary>
