@@ -6,8 +6,6 @@
              x:DataType="vm:EditorViewModel">
 
     <AvalonEdit:TextEditor x:Name="TextEditor"
-                           Background="Yellow"
-                           Foreground="Black"
                            ShowLineNumbers="True"
                            FontFamily="Cascadia Code, Consolas, Courier New, monospace"
                            FontSize="14"

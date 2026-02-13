@@ -13,7 +13,7 @@ namespace Markdown.UI.Desktop.Views;
 /// Editor view hosting the AvaloniaEdit TextEditor control.
 /// Handles wiring between the TextEditor and EditorViewModel.
 /// </summary>
-internal partial class EditorView : UserControl
+public partial class EditorView : UserControl
 {
     private EditorViewModel? _viewModel;
     private bool _isUpdatingFromViewModel;
@@ -94,7 +94,6 @@ internal partial class EditorView : UserControl
             // Use Document.Text for more reliable updates
             if (TextEditor.Document.Text != content)
             {
-                Debug.WriteLine($"[EditorView] Setting Document.Text, content preview: {(content?.Length > 0 ? content[..Math.Min(50, content.Length)] : "(empty)")}...");
                 TextEditor.Document = new TextDocument(content ?? string.Empty);
                 TextEditor.ScrollToHome();
             }
