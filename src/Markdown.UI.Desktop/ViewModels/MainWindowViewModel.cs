@@ -41,19 +41,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     /// The currently active tab.
     /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasActiveTab))]
-    [NotifyPropertyChangedFor(nameof(ActiveEditor))]
     private TabViewModel? _activeTab;
 
     /// <summary>
     /// Indicates whether there is an active tab.
     /// </summary>
-    public bool HasActiveTab => ActiveTab is not null;
+    [ObservableProperty]
+    private bool _hasActiveTab;
 
     /// <summary>
     /// The active tab's editor, or null if no active tab.
     /// </summary>
-    public EditorViewModel? ActiveEditor => ActiveTab?.Editor;
+    [ObservableProperty]
+    private EditorViewModel? _activeEditor;
 
     /// <summary>
     /// The file explorer ViewModel.
@@ -124,9 +124,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private void CreateWelcomeTab()
     {
-        Console.WriteLine($"[DEBUG] CreateWelcomeTab called, Tabs.Count before: {Tabs.Count}");
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] CreateWelcomeTab called, Tabs.Count before: {Tabs.Count}");
-
         var welcomeContent = @"# Welcome to Markdown Editor
 
 This is a test document to verify the editor is working correctly.
@@ -143,9 +140,6 @@ Start editing or open a file to begin!
         tab.Editor.LoadContent(welcomeContent);
         Tabs.Add(tab);
         ActiveTab = tab;
-
-        Console.WriteLine($"[DEBUG] CreateWelcomeTab done, Tabs.Count after: {Tabs.Count}, Tab Title: {tab.Title}");
-        System.Diagnostics.Debug.WriteLine($"[DEBUG] CreateWelcomeTab done, Tabs.Count after: {Tabs.Count}, Tab Title: {tab.Title}");
     }
 
     #region Commands
@@ -235,7 +229,8 @@ Start editing or open a file to begin!
     /// </summary>
     partial void OnActiveTabChanged(TabViewModel? value)
     {
-        Console.WriteLine($"[DEBUG] OnActiveTabChanged: ActiveTab = {value?.Title ?? "null"}, HasActiveTab = {HasActiveTab}, ActiveEditor = {ActiveEditor?.GetType().Name ?? "null"}");
+        HasActiveTab = value is not null;
+        ActiveEditor = value?.Editor;
 
         // Unsubscribe from previous tab
         if (_previousActiveTab is not null)

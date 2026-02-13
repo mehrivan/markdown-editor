@@ -127,12 +127,8 @@ internal partial class MainWindow : Window
 
     private async void OnDataContextChanged(object? sender, EventArgs e)
     {
-        Console.WriteLine($"[DEBUG] MainWindow.OnDataContextChanged: DataContext type = {DataContext?.GetType().Name ?? "null"}");
-
         if (DataContext is MainWindowViewModel viewModel)
         {
-            Console.WriteLine($"[DEBUG] MainWindow: ViewModel assigned, Tabs.Count = {viewModel.Tabs.Count}");
-
             // Provide the visual context for dialogs
             viewModel.SetVisualContext(this);
 
